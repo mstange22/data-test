@@ -1,0 +1,46 @@
+{
+  "actorMap": {
+    "0": {
+      "LOGGER": {
+        "name": "us.everystory.videoCore.Actor"
+      },
+      "type": 2,
+      "code": "JTLMMBBK9R3HYCBRRP2AY3WYTPK8HJ",
+      "enterStage": 0,
+      "exitStage": 27000,
+      "startVideoAt": 0,
+      "firstFrame": true,
+      "dominantColor": 0,
+      "backgroundBlurRadius": 100,
+      "shadowBlur": 25,
+      "blurIterations": 3,
+      "padding": 10
+    },
+    "27000": {
+      "LOGGER": {
+        "name": "us.everystory.videoCore.Actor"
+      },
+      "type": 1,
+      "code": "45N82KS3HMZPHR4DCZTNRRLQYMNHCC",
+      "enterStage": 27000,
+      "exitStage": 42000,
+      "startVideoAt": 0,
+      "firstFrame": true,
+      "dominantColor": 0,
+      "backgroundBlurRadius": 100,
+      "shadowBlur": 25,
+      "blurIterations": 3,
+      "padding": 10
+    }
+  },
+  "audioMap": {},
+  "backgroundMusic": {
+    "startOffset": 0,
+    "enterStage": 0,
+    "exitStage": 42000,
+    "fileName": "https://s3-us-west-2.amazonaws.com/everystory-static/unchained.lite.mp3",
+    "fadingSilence": 0
+  },
+  "leader": "assets/es-intro.mp4",
+  "name": "My Life Test"
+}

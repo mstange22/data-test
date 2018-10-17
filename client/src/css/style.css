@@ -1,0 +1,43 @@
+:root {
+  --main-rx-color: #57337e;
+  --rx-btn-color: #57337e;
+  --btn-hover-color: #7143a3;
+}
+
+.page-container {
+  padding: 40px;
+  text-align: center;
+}
+
+.button-container {
+  margin-top: 20px;
+}
+
+.data-container {
+  margin-top: 20px;
+}
+
+#chart-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.rx-btn,
+.rx-btn:active,
+.rx-btn.active,
+.rx-btn:focus,
+.rx-btn:active:focus {
+  background-color: var(--rx-btn-color);
+  border-color: var(--rx-btn-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rx-btn:hover,
+.rx-btn[disabled]:hover {
+  background-color: var(--btn-hover-color);
+  border-color: var(--btn-hover-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
