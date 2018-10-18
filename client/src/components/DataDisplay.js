@@ -1,15 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-// import API from "../utils/API";
-// import moment from 'moment';
-// import muze, { DataModel } from 'muze';
 import DataHeader from './DataHeader';
 import WatchData from './WatchData';
 import EmotionData from './EmotionData';
 import MediaUploadsData from './MediaUploadsData';
-// import 'muze/dist/muze.css';
-
-// const env = muze();
 
 class DataDisplay extends Component {
   constructor(props) {
