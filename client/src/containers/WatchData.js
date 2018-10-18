@@ -26,13 +26,13 @@ class WatchData extends Component {
             .slice()
             .sort((a, b) => a.date < b.date ? -1 : 1)
             .map(d => {
-              d.date = moment.utc(d.date).format('M/DD/YY');
-              d.sum_watch_minutes = (d.sum_watch / 1000 / 60).toFixed();
+              d['Date'] = moment.utc(d.date).format('M/DD/YY');
+              d['Total Watch Minutes'] = (d.sum_watch / 1000 / 60).toFixed();
               return d;
             }),
           displayString: 'Minutes Watched by Day (Active Accounts)',
         }, () => {
-          console.log('watchData:', this.state.watchData);
+          console.log('cleaned watchData:', this.state.watchData);
           this.props.setDisplayString('Minutes Watched by Day (Active Accounts)');
         });
       })
@@ -53,12 +53,11 @@ class WatchData extends Component {
 
   renderWatchData = () => {
     const { watchData } = this.state;
-    console.log('in watchData:', watchData);
     if (watchData.length < 1) return null;
     const schema = [];
     Object.keys(watchData[0]).forEach(key => {
       const node = { name: key, type: 'dimension' };
-      if (key === 'sum_watch_minutes') {
+      if (key === 'Total Watch Minutes') {
         node.type = 'measure';
       // } else if (key === 'date') {
       //   node.subtype = 'temporal';
@@ -69,10 +68,10 @@ class WatchData extends Component {
     const canvas = env.canvas();
     canvas
       .data(dm)
-      .width(window.innerWidth * 0.6)
+      .width(window.innerWidth - 280)
       .height(480)
-      .rows(['sum_watch_minutes'])
-      .columns(['date'])
+      .rows(['Total Watch Minutes'])
+      .columns(['Date'])
       .color('watcher_id')
       .mount('#chart-container')
     ;

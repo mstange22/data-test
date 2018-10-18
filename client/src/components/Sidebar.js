@@ -28,10 +28,10 @@ class Sidebar extends Component {
         <ul className="sidebar-nav">
           <li>
             <div className="sidebar-loved-one">
-              <div className="sidebar-header">
+              {/* <div className="sidebar-header">
                 <span>Main Menu</span>
-              </div>
-              <div>
+              </div> */}
+              <div className="sidebar-img-container">
                 <img
                   className="sidebar-avatar"
                   alt="Loved One's avatar"
@@ -40,11 +40,11 @@ class Sidebar extends Component {
                   role="link"
                 />
               </div>
-              <div
+              {/* <div
                 className="sidebar-name"
               >
                 Chose a graph:
-              </div>
+              </div> */}
             </div>
           </li>
           <li><a onClick={this.props.showWatchData}>Watch Minutes</a></li>

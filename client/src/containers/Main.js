@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Sidebar from '../components/Sidebar';
-import DataDisplay from '../components/DataDisplay';
+import DataDisplay from './DataDisplay';
 import '../css/style.css';
 import 'muze/dist/muze.css';
 
@@ -29,7 +29,7 @@ class Main extends Component {
           showEmotionData={() => this.setState({ displayMode: 'emotion'})}
         />
         <div className="content-container">
-          <h3 className="rx-header-title">ReminX Data Portal</h3>
+          <h3 className="rx-header-title">Data Pipeline Dashboard</h3>
           <div className="data-container">
             <DataDisplay
               displayMode={this.state.displayMode}

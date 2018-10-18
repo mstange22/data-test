@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import DataHeader from './DataHeader';
+import DataHeader from '../components/DataHeader';
 import WatchData from './WatchData';
 import EmotionData from './EmotionData';
 import MediaUploadsData from './MediaUploadsData';
+import DataPlaceholder from '../components/DataPlaceholder';
 
 class DataDisplay extends Component {
   constructor(props) {
@@ -22,7 +23,9 @@ class DataDisplay extends Component {
 
   renderData = () => {
     const { displayMode } = this.props;
-    if (displayMode === '') return null;
+    if (displayMode === '') return (
+      <DataPlaceholder />
+    );
     if (displayMode === 'watch') return (
       <WatchData setDisplayString={displayString => this.setState({ displayString })} />
     );

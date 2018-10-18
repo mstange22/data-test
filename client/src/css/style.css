@@ -156,6 +156,10 @@ h3.rx-header-title {
   margin-left: -20px;
 }
 
+.sidebar-img-container {
+  padding-bottom: 10px;
+}
+
 .sidebar-avatar {
   cursor: pointer;
   width: 80px;
@@ -165,4 +169,31 @@ h3.rx-header-title {
   box-shadow: unset;
   background-color: white;
   padding: 5px;
+}
+
+.notification-container {
+  z-index: 10;
+  position: fixed;
+  top: 150px;
+  left: 50%;
+  width: 250px;
+  padding: 0 20px 20px 20px;
+  text-align: center;
+  background-color: white;
+  border: 1px solid var(--main-border-color);
+  border-radius: 10px;
+  box-shadow: 3px 3px 10px #777777;
+  margin-left: -125px;
+}
+
+.data-placeholder-container {
+  margin-top: 100px;
+  text-align: center;
+  font-size: 2em;
+  color: #cccccc;
+}
+
+.data-placeholder-icon-container {
+  font-size: 300px;
+  line-height: 300px;
 }

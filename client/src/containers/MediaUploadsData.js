@@ -60,7 +60,6 @@ class MediaUploadsData extends Component {
 
   renderMediaUploadsData = () => {
     const { mediaUploads } = this.state;
-    console.log('in mediaUploads:', mediaUploads);
     if (mediaUploads.length < 1) {
       return null;
     }
@@ -77,7 +76,7 @@ class MediaUploadsData extends Component {
     const canvas = env.canvas();
     canvas
       .data(dm)
-      .width(window.innerWidth * 0.6)
+      .width(window.innerWidth - 280)
       .height(480)
       .rows(['Number of Users'])
       .columns(['Uploads'])
