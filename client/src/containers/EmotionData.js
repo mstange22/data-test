@@ -4,9 +4,7 @@ import { Button } from 'react-bootstrap';
 import moment from 'moment';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
-import { DateRange } from 'react-date-range';
-// import 'react-date-range/dist/styles.css'; // main style file
-// import 'react-date-range/dist/theme/default.css'; // theme css file
+import DateRangePicker from '../components/DateRangePicker';
 
 const env = muze();
 
@@ -100,13 +98,9 @@ class EmotionData extends Component {
     ;
   }
 
-  handleDateChange = (date) => {
-    console.log('date picker date:', date);
-    if (moment(date.endDate).diff(date.startDate, 'days') > 0) {
-      console.log('diff!');
-      document.getElementById('chart-container').innerHTML = '';
-      this.renderEmotionData({ startDate: date.startDate, endDate: date.endDate })
-    }
+  handleCloseNotification = (e) => {
+    e.preventDefault();
+    this.setState({ displayError: false });
   }
 
   renderDashboard = () => {
@@ -117,19 +111,12 @@ class EmotionData extends Component {
       .filter(d => this.state.activeWatcherIds.includes(d.watcher_id))
     console.log('data:', activeUserEmotionData);
     return (
-      <div>
-        <DateRange
-          onChange={this.handleDateChange}
-          minDate={moment(activeUserEmotionData[0].Date, 'M/DD/YY')}
-          maxDate={moment(activeUserEmotionData[activeUserEmotionData.length - 1].Date, 'M/DD/YY')}
-        />
-      </div>
+      <DateRangePicker
+        onDateRangePicked={(range) => this.renderEmotionData(range)}
+        minDate={moment(activeUserEmotionData[0].Date, 'M/DD/YY')}
+        maxDate={moment(activeUserEmotionData[activeUserEmotionData.length - 1].Date, 'M/DD/YY')}
+      />
     );
-  }
-
-  handleCloseNotification = (e) => {
-    e.preventDefault();
-    this.setState({ displayError: false });
   }
 
   renderNotification = () => {

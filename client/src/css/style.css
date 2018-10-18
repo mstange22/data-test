@@ -49,8 +49,23 @@ h3.rx-header-title {
 }
 
 #chart-container {
-  margin-top: 20px;
+  margin-top: 40px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
 }
+
+.date-picker-container {
+  margin: 0 auto;
+  margin-top: 20px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  width: fit-content;
+}
+
 
 .rx-btn,
 .rx-btn:active,
