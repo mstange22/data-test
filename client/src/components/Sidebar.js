@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 // import { connect } from 'react-redux';
-import { NavLink } from 'react-router-dom';
 // import { toggleSidebar } from '../../modules/Album/albumActions';
 
 class Sidebar extends Component {
@@ -48,15 +47,9 @@ class Sidebar extends Component {
               </div>
             </div>
           </li>
-          <li>
-            <NavLink to="/" onClick={this.props.showWatchData}>Watch Minutes</NavLink>
-          </li>
-          <li>
-            <NavLink to="/uploads" onClick={this.props.showMediaUploads}>
-              <span>Media Uploads</span>
-            </NavLink>
-          </li>
-          <li><NavLink to="/participants" onClick={this.props.showEmotionData}>Emotion</NavLink></li>
+          <li><a onClick={this.props.showWatchData}>Watch Minutes</a></li>
+          <li><a onClick={this.props.showMediaUploads}>Media Uploads</a></li>
+          <li><a onClick={this.props.showEmotionData}>Emotion</a></li>
         </ul>
       </div>
     );

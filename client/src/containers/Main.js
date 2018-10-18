@@ -1,33 +1,15 @@
 import React, { Component } from "react";
 import Sidebar from '../components/Sidebar';
-import DataTest from '../components/DataTest';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import DataDisplay from '../components/DataDisplay';
+import '../css/style.css';
+import 'muze/dist/muze.css';
 
 class Main extends Component {
   constructor() {
     super();
     this.state = {
       displayMode: '',
-      displayString: '',
     };
-  }
-
-  renderDataHeader = () => {
-    const { displayString } = this.state;
-    return (
-      <div>
-        <h2>
-          {displayString === '' ? (
-            <span>
-              <FontAwesomeIcon icon="arrow-left" />
-              {' Choose a graph in the sidebar'}
-            </span>
-          ) : (
-            <span>{displayString}</span>
-          )}
-        </h2>
-      </div>
-    )
   }
 
   render() {
@@ -49,13 +31,10 @@ class Main extends Component {
         <div className="content-container">
           <h3 className="rx-header-title">ReminX Data Portal</h3>
           <div className="data-container">
-            {this.renderDataHeader()}
-            <div id="chart-container" />
+            <DataDisplay
+              displayMode={this.state.displayMode}
+            />
           </div>
-          <DataTest
-            displayMode={this.state.displayMode}
-            setDisplayString={displayString => this.setState({ displayString })}
-          />
         </div>
       </div>
     )
