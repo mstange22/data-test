@@ -1,15 +1,11 @@
-import React, { Component } from "react";
-// import Images from "./Images";
-import DataTest from './DataTest';
+import React from "react";
+import Main from './containers/Main';
+import { library } from '@fortawesome/fontawesome-svg-core';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 
-class App extends Component {
+library.add(faArrowLeft);
 
-  render() {
-    return (
-      // <Images/>
-      <DataTest />
-    );
-  }
-}
+const App = () => <Main />;
 
 export default App;

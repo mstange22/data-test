@@ -5,4 +5,5 @@ export default {
   getWatchData: () => axios.get('/watch'),
   getActiveAccounts: () => axios.get('/accounts/active'),
   getMediaUploadsData: () => axios.get('/media/uploads'),
+  getEmotionData: () => axios.get('/emotion'),
 };

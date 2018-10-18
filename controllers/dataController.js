@@ -2,7 +2,17 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
 
   app.get('/watch', (req, res) => {
     watchStatsConnection.query('SELECT * FROM watch_day', (err, data) => {
-      if (err) console.log(err);
+      if (err) throw(err);
+      else {
+        res.json(data);
+      }
+    });
+  });
+
+  app.get('/emotion', (req, res) => {
+    const queryString = 'SELECT * FROM emotion_day';
+    watchStatsConnection.query(queryString, (err, data) => {
+      if (err) throw(err);
       else {
         res.json(data);
       }
@@ -12,7 +22,7 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
   app.get('/accounts/active', (req, res) => {
     const queryString = 'SELECT a.patient_account_id FROM album a JOIN customer_order co ON a.album_id = co.album_id AND (co.status = \'active\' or co.status = \'trialing\')';
     dbConnection.query(queryString, (err, data) => {
-      if (err) console.log(err);
+      if (err) throw(err);
       else {
         res.json(data);
       }
@@ -52,7 +62,7 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
     );
 
     dbConnection.query(queryString, (err, data) => {
-      if (err) console.log(err);
+      if (err) throw(err);
       else {
         res.json(data);
       }
