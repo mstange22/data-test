@@ -5,6 +5,7 @@ import moment from 'moment';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
 import DateRangePicker from '../components/DateRangePicker';
+import WatcherIdSelector from '../components/WatcherIdSelector';
 
 const env = muze();
 
@@ -15,6 +16,8 @@ class EmotionData extends Component {
       emotionData: [],
       activeWatcherIds: [],
       displayError: false,
+      selectedOption: 'smileCount',
+      currentWatcherId: 0,
     };
   }
 
@@ -56,13 +59,30 @@ class EmotionData extends Component {
   }
 
   triggerError = (errorMessage) => {
-    this.setState({ displayError: true, errorMessage });
+    if (!this.state.displayError) {
+      this.setState({ displayError: true, errorMessage });
+    }
   }
 
   renderEmotionData = (range = null) => {
     const { emotionData } = this.state;
     if (emotionData.length < 1) return null;
     let filteredEmotionData = emotionData.filter(d => this.state.activeWatcherIds.includes(d.watcher_id));
+
+    // check for watcher ID filter
+    if (this.state.currentWatcherId !== 0) {
+      console.log('currentWatcherId:', this.state.currentWatcherId);
+      filteredEmotionData = filteredEmotionData.filter(d => {
+        console.log('d.watcher_id:', d.watcher_id);
+        if (d.watcher_id === parseInt(this.state.currentWatcherId, 10)) {
+          console.log('*** match! ***');
+          return true;
+        }
+        return false;
+      });
+    }
+
+    // check for date range filter
     if (range) {
       const startDate = range.startDate.format('M/DD/YY');
       const endDate = range.endDate.format('M/DD/YY');
@@ -73,14 +93,16 @@ class EmotionData extends Component {
         return false;
       });
     }
+
     if (filteredEmotionData.length < 1) {
       this.triggerError('There are no data events over that date range');
       return null;
     }
+
     const schema = [];
     Object.keys(filteredEmotionData[0]).forEach(key => {
       const node = { name: key, type: 'dimension' };
-      if (key === 'Total Smiles') {
+      if (key === 'Total Smiles' || key === 'Average Smile Strength') {
         node.type = 'measure';
       }
       schema.push(node);
@@ -89,7 +111,7 @@ class EmotionData extends Component {
     const canvas = env.canvas();
     canvas
       .data(dm)
-      .width(window.innerWidth - 280)
+      .width(window.innerWidth - 300)
       .height(480)
       .rows(['Total Smiles'])
       .columns(['Date'])
@@ -103,20 +125,54 @@ class EmotionData extends Component {
     this.setState({ displayError: false });
   }
 
+  handleInputChange = (e) => {
+    const { name, value } = e.target;
+    console.log('checked:', name);
+    console.log('value:', value);
+    this.setState({ selectedOption: name });
+  }
+
   renderDashboard = () => {
     const { emotionData } = this.state;
     if (this.state.emotionData.length < 1) return null;
     const activeUserEmotionData = emotionData
       .slice()
-      .filter(d => this.state.activeWatcherIds.includes(d.watcher_id))
-    console.log('data:', activeUserEmotionData);
+      .filter(d => this.state.activeWatcherIds.includes(d.watcher_id));
     if (activeUserEmotionData.length < 1) return null;
     return (
-      <DateRangePicker
-        onDateRangePicked={(range) => this.renderEmotionData(range)}
-        minDate={moment(activeUserEmotionData[0].Date, 'M/DD/YY')}
-        maxDate={moment(activeUserEmotionData[activeUserEmotionData.length - 1].Date, 'M/DD/YY')}
-      />
+      <div className="data-dashboard">
+      <form>
+        <div className="form-input-container">
+          <label>
+            <input
+              name="smileCount"
+              type="checkbox"
+              checked={this.state.selectedOption === 'smileCount'}
+              onChange={this.handleInputChange}
+            />
+            {' Smile Count'}
+          </label>
+          {/* <label>
+            <input
+              name="avgStrength"
+              type="checkbox"
+              checked={this.state.selectedOption === 'avgStrength'}
+              onChange={this.handleInputChange}
+            />
+            {' Average Smile Strength'}
+          </label> */}
+          <WatcherIdSelector
+            activeUserData={activeUserEmotionData}
+            onWatcherIdSelected={(currentWatcherId) => this.setState({ currentWatcherId })}
+          />
+        </div>
+      </form>
+        <DateRangePicker
+          onDateRangePicked={(range) => this.renderEmotionData(range)}
+          minDate={moment(activeUserEmotionData[0].Date, 'M/DD/YY')}
+          maxDate={moment(activeUserEmotionData[activeUserEmotionData.length - 1].Date, 'M/DD/YY')}
+        />
+      </div>
     );
   }
 
@@ -146,6 +202,7 @@ class EmotionData extends Component {
   }
 
   render() {
+    console.log('this.state:', this.state);
     return (
       <div className="emotion-dashboard">
         <div id="chart-container">
