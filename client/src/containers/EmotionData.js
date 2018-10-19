@@ -110,6 +110,7 @@ class EmotionData extends Component {
       .slice()
       .filter(d => this.state.activeWatcherIds.includes(d.watcher_id))
     console.log('data:', activeUserEmotionData);
+    if (activeUserEmotionData.length < 1) return null;
     return (
       <DateRangePicker
         onDateRangePicked={(range) => this.renderEmotionData(range)}

@@ -42,6 +42,11 @@ h3.rx-header-title {
   white-space: nowrap;
 }
 
+.data-header-container {
+  margin-top: 10px;
+  text-align: center;
+}
+
 .button-container {
   max-width: 250px;
   margin-top: 20px;
@@ -49,7 +54,7 @@ h3.rx-header-title {
 }
 
 #chart-container {
-  margin-top: 40px;
+  margin-top: 10px;
   padding: 10px;
   border-radius: 10px;
   border: 1px solid #ddd;
