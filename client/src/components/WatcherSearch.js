@@ -8,13 +8,13 @@ class WatcherSearch extends Component {
     this.state = {
       value: '',
       suggestions: [],
-      watcherIds: [],
+      watcherInfo: [],
     };
     this.submitted = false;
   }
 
   componentDidMount() {
-    this.getWatcherIds();
+    this.getWatcherInfo();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -23,22 +23,23 @@ class WatcherSearch extends Component {
     }
   }
 
-  getWatcherIds = () => {
-    const watcherIds = this.props.activeUserData.reduce((accum, d) => {
+  getWatcherInfo = () => {
+    const watcherInfo = this.props.activeUserData.reduce((accum, d) => {
       if (accum.findIndex(elem => elem.watcher_id === d.watcher_id) === -1) {
         return ([...accum, { watcher_id: d.watcher_id, familyCode: d.familyCode }]);
       } else {
         return accum;
       }
     }, []);
-    this.setState({ watcherIds });
+    this.setState({ watcherInfo });
   }
 
   // Teach Autosuggest how to calculate suggestions for any given input value.
   getSuggestions = (value) => {
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
-    return inputLength === 0 ? [] : this.state.watcherIds.filter(id => id.watcher_id.toString().toLowerCase().slice(0, inputLength) === inputValue);
+    if (inputLength === 0) return [];
+    return this.state.watcherInfo.filter(id => id.watcher_id.toString().toLowerCase().slice(0, inputLength) === inputValue);
   };
 
   getSuggestionValue = suggestion => suggestion.watcher_id.toString();
@@ -47,7 +48,7 @@ class WatcherSearch extends Component {
     if (e) e.preventDefault();
     console.log('handleAccountChange', this.state.value);
     this.submitted = true;
-    if (this.state.watcherIds.findIndex(element => element.watcher_id.toString() === this.state.value) !== -1) {
+    if (this.state.watcherInfo.findIndex(element => element.watcher_id.toString() === this.state.value) !== -1) {
       document.getElementById('chart-container').innerHTML = '';
       this.props.onWatcherIdSelected(parseInt(this.state.value, 10));
       this.submitted = false;
