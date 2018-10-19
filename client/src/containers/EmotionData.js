@@ -5,7 +5,8 @@ import moment from 'moment';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
 import DateRangePicker from '../components/DateRangePicker';
-import WatcherIdSelector from '../components/WatcherIdSelector';
+// import WatcherIdSelector from '../components/WatcherIdSelector';
+import WatcherSearch from '../components/WatcherSearch';
 
 const env = muze();
 
@@ -14,15 +15,38 @@ class EmotionData extends Component {
     super(props);
     this.state = {
       emotionData: [],
+      activeWatcherAccounts: [],
       activeWatcherIds: [],
       displayError: false,
       selectedOption: 'smileCount',
       currentWatcherId: 0,
     };
+    this.hasAddedFamilyCodes = false;
   }
 
   componentDidMount() {
     this.getEmotionData();
+  }
+
+  componentDidUpdate() {
+    if (this.state.activeWatcherAccounts.length && this.state.emotionData.length && !this.hasAddedFamilyCodes) {
+      this.addFamilyCodesToEmotionData();
+    }
+  }
+
+  addFamilyCodesToEmotionData = () => {
+    const { activeWatcherAccounts } = this.state;
+    const emotionData = this.state.emotionData.slice();
+    emotionData.forEach(d => {
+      for (let i = 0; i < activeWatcherAccounts.length; i++) {
+        if (activeWatcherAccounts[i].patient_account_id === d.watcher_id) {
+          d.familyCode = activeWatcherAccounts[i].read_write_share_code;
+          break;
+        }
+      }
+    });
+    this.setState({ emotionData });
+    this.hasAddedFamilyCodes = true;
   }
 
   getEmotionData = (range = null) => {
@@ -30,6 +54,7 @@ class EmotionData extends Component {
     this.setState({ emotionData: [] });
     API.getEmotionData()
       .then(res => {
+        this.props.setDisplayString('Number of Smiles by Day (Active Accounts)');
         this.setState({
           emotionData: res.data
             .slice()
@@ -39,20 +64,15 @@ class EmotionData extends Component {
               d['Total Smiles'] = d.count;
               return d;
             }),
-        }, () => {
-          console.log('emotionData res:', this.state.emotionData);
-          this.props.setDisplayString('Number of Smiles by Day (Active Accounts)');
         });
       })
       .catch(err => console.log(err.message));
     API.getActiveAccounts()
     .then(res => {
-      // console.log('active customer accounts:', res.data);
+      console.log('active customer accounts:', res.data);
       this.setState({
-        customerAccounts: res.data,
+        activeWatcherAccounts: res.data,
         activeWatcherIds: res.data.reduce((acc, d) => [...acc, d.patient_account_id], []),
-      }, () => {
-        // console.log('active watcher IDs:', this.state.activeWatcherIds);
       });
     })
     .catch(err => console.log(err.message));
@@ -71,11 +91,8 @@ class EmotionData extends Component {
 
     // check for watcher ID filter
     if (this.state.currentWatcherId !== 0) {
-      console.log('currentWatcherId:', this.state.currentWatcherId);
       filteredEmotionData = filteredEmotionData.filter(d => {
-        console.log('d.watcher_id:', d.watcher_id);
-        if (d.watcher_id === parseInt(this.state.currentWatcherId, 10)) {
-          console.log('*** match! ***');
+        if (d.watcher_id === this.state.currentWatcherId) {
           return true;
         }
         return false;
@@ -95,7 +112,7 @@ class EmotionData extends Component {
     }
 
     if (filteredEmotionData.length < 1) {
-      this.triggerError('There are no data events over that date range');
+      this.triggerError('There are no data events over the selected date range');
       return null;
     }
 
@@ -126,9 +143,7 @@ class EmotionData extends Component {
   }
 
   handleInputChange = (e) => {
-    const { name, value } = e.target;
-    console.log('checked:', name);
-    console.log('value:', value);
+    const { name } = e.target;
     this.setState({ selectedOption: name });
   }
 
@@ -161,8 +176,14 @@ class EmotionData extends Component {
             />
             {' Average Smile Strength'}
           </label> */}
-          <WatcherIdSelector
+          {/* <WatcherIdSelector
             activeUserData={activeUserEmotionData}
+            activeWatcherAccounts={this.state.activeWatcherAccounts}
+            onWatcherIdSelected={(currentWatcherId) => this.setState({ currentWatcherId })}
+          /> */}
+          <WatcherSearch
+            activeUserData={activeUserEmotionData}
+            activeWatcherAccounts={this.state.activeWatcherAccounts}
             onWatcherIdSelected={(currentWatcherId) => this.setState({ currentWatcherId })}
           />
         </div>
@@ -202,7 +223,7 @@ class EmotionData extends Component {
   }
 
   render() {
-    console.log('this.state:', this.state);
+    // console.log('emotion state:', this.state);
     return (
       <div className="emotion-dashboard">
         <div id="chart-container">

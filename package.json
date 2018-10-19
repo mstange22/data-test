@@ -46,6 +46,7 @@
     "mysql": "^2.16.0",
     "path": "^0.12.7",
     "react": "^16.5.2",
+    "react-autosuggest": "^9.4.2",
     "react-bootstrap": "^0.32.4",
     "react-date-range": "^0.9.4",
     "react-dom": "^16.5.2",

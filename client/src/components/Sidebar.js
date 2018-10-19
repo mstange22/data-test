@@ -45,9 +45,9 @@ class Sidebar extends Component {
               </div> */}
             </div>
           </li>
-          <li><a onClick={this.props.showWatchData}>Watch Minutes</a></li>
+          <li><a onClick={this.props.showWatchData}>Watch Stats</a></li>
           <li><a onClick={this.props.showMediaUploads}>Media Uploads</a></li>
-          <li><a onClick={this.props.showEmotionData}>Emotion</a></li>
+          <li><a onClick={this.props.showEmotionData}>Emotion Stats</a></li>
         </ul>
       </div>
     );
