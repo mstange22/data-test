@@ -34,10 +34,8 @@ class Sidebar extends Component {
               <div className="sidebar-img-container">
                 <img
                   className="sidebar-avatar"
-                  alt="Loved One's avatar"
+                  alt="Bar Graph"
                   src={require('../assets/images/bar-graph.png')}
-                  onClick={this.props.onEditLovedOne}
-                  role="link"
                 />
               </div>
               {/* <div

@@ -20,7 +20,15 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
   });
 
   app.get('/accounts/active', (req, res) => {
-    const queryString = 'SELECT a.patient_account_id FROM album a JOIN customer_order co ON a.album_id = co.album_id AND (co.status = \'active\' or co.status = \'trialing\')';
+    const queryString = (
+      'SELECT \
+        a.patient_account_id, \
+        a.read_write_share_code \
+      FROM \
+        album a \
+        JOIN customer_order co \
+        ON a.album_id = co.album_id AND (co.status = \'active\' or co.status = \'trialing\')'
+    );
     dbConnection.query(queryString, (err, data) => {
       if (err) throw(err);
       else {

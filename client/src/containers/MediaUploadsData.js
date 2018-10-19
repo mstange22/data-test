@@ -80,6 +80,7 @@ class MediaUploadsData extends Component {
       .height(480)
       .rows(['Number of Users'])
       .columns(['Uploads'])
+      // .color('watcher_id')
       .mount('#chart-container')
     ;
   }

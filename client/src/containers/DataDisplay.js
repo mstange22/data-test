@@ -39,7 +39,7 @@ class DataDisplay extends Component {
 
   render() {
     return (
-      <div>
+      <div className="data-container">
         <DataHeader displayString={this.state.displayString} />
         {this.renderData()}
       </div>
