@@ -38,11 +38,9 @@ class EmotionData extends Component {
     const { activeWatcherAccounts } = this.state;
     const emotionData = this.state.emotionData.slice();
     emotionData.forEach(d => {
-      for (let i = 0; i < activeWatcherAccounts.length; i++) {
-        if (activeWatcherAccounts[i].patient_account_id === d.watcher_id) {
-          d.familyCode = activeWatcherAccounts[i].read_write_share_code;
-          break;
-        }
+      const idx = activeWatcherAccounts.findIndex(account => account.patient_account_id === d.watcher_id);
+      if (idx !== -1) {
+        d['Family Code'] = activeWatcherAccounts[idx].read_write_share_code;
       }
     });
     this.setState({ emotionData });
@@ -124,6 +122,7 @@ class EmotionData extends Component {
       }
       schema.push(node);
     });
+
     const dm = new DataModel(filteredEmotionData, schema);
     const canvas = env.canvas();
     canvas
@@ -132,7 +131,7 @@ class EmotionData extends Component {
       .height(480)
       .rows(['Total Smiles'])
       .columns(['Date'])
-      .color('watcher_id')
+      .color(true ? 'watcher_id' : 'Famil Code')
       .mount('#chart-container')
     ;
   }
@@ -143,6 +142,7 @@ class EmotionData extends Component {
   }
 
   handleInputChange = (e) => {
+    e.preventDefault();
     const { name } = e.target;
     this.setState({ selectedOption: name });
   }
@@ -156,7 +156,6 @@ class EmotionData extends Component {
     if (activeUserEmotionData.length < 1) return null;
     return (
       <div className="data-dashboard">
-      <form>
         <div className="form-input-container">
           <label>
             <input
@@ -167,27 +166,12 @@ class EmotionData extends Component {
             />
             {' Smile Count'}
           </label>
-          {/* <label>
-            <input
-              name="avgStrength"
-              type="checkbox"
-              checked={this.state.selectedOption === 'avgStrength'}
-              onChange={this.handleInputChange}
-            />
-            {' Average Smile Strength'}
-          </label> */}
-          {/* <WatcherIdSelector
-            activeUserData={activeUserEmotionData}
-            activeWatcherAccounts={this.state.activeWatcherAccounts}
-            onWatcherIdSelected={(currentWatcherId) => this.setState({ currentWatcherId })}
-          /> */}
           <WatcherSearch
             activeUserData={activeUserEmotionData}
             activeWatcherAccounts={this.state.activeWatcherAccounts}
             onWatcherIdSelected={(currentWatcherId) => this.setState({ currentWatcherId })}
           />
         </div>
-      </form>
         <DateRangePicker
           onDateRangePicked={(range) => this.renderEmotionData(range)}
           minDate={moment(activeUserEmotionData[0].Date, 'M/DD/YY')}
