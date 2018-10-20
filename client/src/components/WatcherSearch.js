@@ -80,7 +80,7 @@ class WatcherSearch extends Component {
   );
 
   render() {
-    console.log('state value:', this.state.value);
+    // console.log('state value:', this.state.value);
     const { value, suggestions } = this.state;
     const inputProps = {
       placeholder: 'Type a family code or watcher ID',
