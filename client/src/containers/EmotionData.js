@@ -18,9 +18,12 @@ class EmotionData extends Component {
       emotionData: [],
       activeWatcherAccounts: [],
       activeWatcherIds: [],
+      activeFamilyCodes: [],
       displayError: false,
       selectedOption: 'smileCount',
       currentWatcherId: 0,
+      currentFamilyCode: '',
+      renderMode: 'familyCode',
     };
     this.hasAddedFamilyCodes = false;
   }
@@ -44,6 +47,7 @@ class EmotionData extends Component {
         d['Family Code'] = activeWatcherAccounts[idx].read_write_share_code;
       }
     });
+    console.log('emotion data:', emotionData);
     this.setState({ emotionData });
     this.hasAddedFamilyCodes = true;
   }
@@ -73,6 +77,7 @@ class EmotionData extends Component {
       this.setState({
         activeWatcherAccounts: res.data,
         activeWatcherIds: res.data.reduce((acc, d) => [...acc, d.patient_account_id], []),
+        activeFamilyCodes: res.data.reduce((acc, d) => [...acc, d.read_write_share_code], []),
       });
     })
     .catch(err => console.log(err.message));
@@ -86,17 +91,26 @@ class EmotionData extends Component {
 
   renderEmotionData = (range = null) => {
     const { emotionData } = this.state;
+    const { renderMode } = this.state;
+    let filteredEmotionData = [];
+
     if (emotionData.length < 1) return null;
-    let filteredEmotionData = emotionData.filter(d => this.state.activeWatcherIds.includes(d.watcher_id));
+    if (renderMode === 'watcherId') {
+      filteredEmotionData = emotionData.filter(d => this.state.activeWatcherIds.includes(d['Watcher ID']));
+    } else {
+      filteredEmotionData = emotionData.filter(d => this.state.activeFamilyCodes.includes(d['Family Code']));
+    }
+    console.log('filtered emotion data:', filteredEmotionData);
+    if (filteredEmotionData.length < 1) return null;
 
     // check for watcher ID filter
-    if (this.state.currentWatcherId !== 0) {
-      filteredEmotionData = filteredEmotionData.filter(d => {
-        if (d.watcher_id === this.state.currentWatcherId) {
-          return true;
-        }
-        return false;
-      });
+    if (renderMode === 'watcherId' && this.state.currentWatcherId !== 0) {
+      filteredEmotionData = filteredEmotionData.filter(d => d['Watcher ID'] === this.state.currentWatcherId);
+    }
+
+    // check for family code filter
+    if (renderMode === 'familyCode' && this.state.currentFamilyCode !== '') {
+      filteredEmotionData = filteredEmotionData.filter(d => d['Family Code'] === this.state.currentWFamilyCode);
     }
 
     // check for date range filter
@@ -134,7 +148,7 @@ class EmotionData extends Component {
       .height(480)
       .rows(['Total Smiles'])
       .columns(['Date'])
-      .color(true ? 'Watcher ID' : 'Family Code')
+      .color(renderMode === 'watcherId' ? 'Watcher ID' : 'Family Code')
       .mount('#chart-container')
     ;
   }
@@ -191,7 +205,7 @@ class EmotionData extends Component {
     return (
       <Notification
         errorMessage={this.state.errorMessage}
-        onCloseNotification={this.setState({ displayError: false })}
+        onCloseNotification={() => this.setState({ displayError: false })}
       />
     )
   }
