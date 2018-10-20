@@ -26,7 +26,7 @@ class WatcherSearch extends Component {
   getWatcherInfo = () => {
     const watcherInfo = this.props.activeUserData.reduce((accum, d) => {
       if (accum.findIndex(elem => elem.watcher_id === d.watcher_id) === -1) {
-        return ([...accum, { watcher_id: d.watcher_id, familyCode: d.familyCode }]);
+        return ([...accum, { watcher_id: d.watcher_id, familyCode: d['Family Code'] }]);
       } else {
         return accum;
       }

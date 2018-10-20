@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'react-bootstrap';
+// import { Button } from 'react-bootstrap';
 import moment from 'moment';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
 import DateRangePicker from '../components/DateRangePicker';
 // import WatcherIdSelector from '../components/WatcherIdSelector';
 import WatcherSearch from '../components/WatcherSearch';
+import Notification from '../components/Notification';
 
 const env = muze();
 
@@ -60,6 +61,7 @@ class EmotionData extends Component {
             .map(d => {
               d['Date'] = moment.utc(d.date).format('M/DD/YY');
               d['Total Smiles'] = d.count;
+              d['Watcher ID'] = d.watcher_id;
               return d;
             }),
         });
@@ -109,6 +111,7 @@ class EmotionData extends Component {
       });
     }
 
+    // throw error if no records remain after filter
     if (filteredEmotionData.length < 1) {
       this.triggerError('There are no data events over the selected date range');
       return null;
@@ -131,20 +134,20 @@ class EmotionData extends Component {
       .height(480)
       .rows(['Total Smiles'])
       .columns(['Date'])
-      .color(true ? 'watcher_id' : 'Famil Code')
+      .color(true ? 'Watcher ID' : 'Family Code')
       .mount('#chart-container')
     ;
-  }
-
-  handleCloseNotification = (e) => {
-    e.preventDefault();
-    this.setState({ displayError: false });
   }
 
   handleInputChange = (e) => {
     e.preventDefault();
     const { name } = e.target;
     this.setState({ selectedOption: name });
+  }
+
+  // change this to take in either a watcher id or a family code
+  handleWatcherSelected = (currentWatcherId) => {
+    this.setState({ currentWatcherId });
   }
 
   renderDashboard = () => {
@@ -169,7 +172,7 @@ class EmotionData extends Component {
           <WatcherSearch
             activeUserData={activeUserEmotionData}
             activeWatcherAccounts={this.state.activeWatcherAccounts}
-            onWatcherIdSelected={(currentWatcherId) => this.setState({ currentWatcherId })}
+            onWatcherIdSelected={this.handleWatcherSelected}
           />
         </div>
         <DateRangePicker
@@ -186,23 +189,10 @@ class EmotionData extends Component {
       return null;
     }
     return (
-      <div className="notification-container">
-        <h2>Error!</h2>
-        { this.state.errorMessage }
-        <br />
-        <br />
-        <form>
-          <Button
-            bsStyle="default"
-            bsSize="large"
-            onClick={this.handleCloseNotification}
-            type="submit"
-          >
-            OK
-          </Button>
-        </form>
-
-      </div>
+      <Notification
+        errorMessage={this.state.errorMessage}
+        onCloseNotification={this.setState({ displayError: false })}
+      />
     )
   }
 
