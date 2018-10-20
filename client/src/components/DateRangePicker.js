@@ -14,9 +14,8 @@ class DateRangePicker extends Component {
   }
 
   handleDateChange = (date) => {
-    console.log('date picker date:', date);
+    // console.log('date picker date:', date);
     if (moment(date.endDate).diff(date.startDate, 'days') > 0) {
-      console.log('diff!');
       document.getElementById('chart-container').innerHTML = '';
       this.props.onDateRangePicked({ startDate: date.startDate, endDate: date.endDate })
     }
