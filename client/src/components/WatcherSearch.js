@@ -26,28 +26,42 @@ class WatcherSearch extends Component {
   }
 
   getWatcherInfo = () => {
-    console.log('activeWatcherAccounts:', this.props.activeWatcherAccounts);
-    // let watcherInfo = [{
-    //   title: 'Family Codes',
-    //   familyCodes: [],
-    // }, {
-    //   title: 'Watcher IDs',
-    //   watcherIds: [],
-    // }];
-
+    // console.log('activeWatcherAccounts:', this.props.activeWatcherAccounts);
     const watcherIds = this.props.activeUserData.reduce((accum, d) => !accum.includes(d['Watcher ID']) ? [...accum, d['Watcher ID']] : accum, []);
     const familyCodes = this.props.activeUserData.reduce((accum, d) => !accum.includes(d['Family Code']) ? [...accum, d['Family Code']] : accum, []);
-    const watcherInfo = familyCodes.concat(watcherIds);
+    const watcherInfo = [{
+      title: 'Family Codes',
+      info: familyCodes,
+    }, {
+      title: 'Watcher IDs',
+      info: watcherIds,
+    }];
+    console.log('watcherInfo:', watcherInfo);
     this.setState({ watcherIds, familyCodes, watcherInfo });
   }
 
   // Teach Autosuggest how to calculate suggestions for any given input value.
+  // getSuggestions = (value) => {
+  //   const inputValue = value.trim().toLowerCase();
+  //   const inputLength = inputValue.length;
+  //   if (inputLength === 0) return [];
+  //   return this.state.watcherInfo.filter(id => id.toString().toLowerCase().slice(0, inputLength) === inputValue);
+  // };
   getSuggestions = (value) => {
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
     if (inputLength === 0) return [];
-    return this.state.watcherInfo.filter(id => id.toString().toLowerCase().slice(0, inputLength) === inputValue);
-  };
+    const suggestions = this.state.watcherInfo
+      .map(section => {
+        return {
+          title: section.title,
+          info: section.info.filter(id => id.toString().toLowerCase().slice(0, inputLength) === inputValue)
+        };
+      })
+      .filter(section => section.info.length > 0);
+    console.log('suggestions:', suggestions);
+    return suggestions;
+  }
 
   getSuggestionValue = suggestion => suggestion.toString();
 
@@ -90,6 +104,16 @@ class WatcherSearch extends Component {
     </div>
   );
 
+  renderSectionTitle = (section) => {
+    return (
+      <strong>{section.title}</strong>
+    );
+  }
+
+  getSectionSuggestions = (section) => {
+    return section.info;
+  }
+
   render() {
     // console.log('state value:', this.state.value);
     const { value, suggestions } = this.state;
@@ -101,11 +125,14 @@ class WatcherSearch extends Component {
     return (
       <div className="watcher-search-container">
         <Autosuggest
+          multiSection={true}
           suggestions={suggestions}
           onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
           onSuggestionsClearRequested={this.onSuggestionsClearRequested}
           getSuggestionValue={this.getSuggestionValue}
           renderSuggestion={this.renderSuggestion}
+          renderSectionTitle={this.renderSectionTitle}
+          getSectionSuggestions={this.getSectionSuggestions}
           inputProps={inputProps}
           onSuggestionSelected={this.handleAccountChange}
         />

@@ -304,6 +304,12 @@ input[type=checkbox] {
   background-color: #ddd;
 }
 
+.react-autosuggest__section-title {
+  padding: 10px 0 0 10px;
+  font-size: 12px;
+  color: #777;
+}
+
 #watcher-id-submit-btn {
   margin-left: 5px;
   line-height: 1.4;
