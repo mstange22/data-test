@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
-import 'muze/dist/muze.css';
 
 const env = muze();
 

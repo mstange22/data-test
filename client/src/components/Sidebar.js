@@ -48,6 +48,7 @@ class Sidebar extends Component {
           <li><a onClick={this.props.showWatchData}>Watch Stats</a></li>
           <li><a onClick={this.props.showMediaUploads}>Media Uploads</a></li>
           <li><a onClick={this.props.showEmotionData}>Emotion Stats</a></li>
+          <li><a onClick={this.props.showSmsData}>SMS Stats</a></li>
         </ul>
       </div>
     );
@@ -58,6 +59,7 @@ Sidebar.propTypes = {
   showWatchData: PropTypes.func.isRequired,
   showEmotionData: PropTypes.func.isRequired,
   showMediaUploads: PropTypes.func.isRequired,
+  showSmsData: PropTypes.func.isRequired,
   // toggleSidebar: PropTypes.func.isRequired,
 };
 

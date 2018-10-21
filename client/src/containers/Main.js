@@ -21,6 +21,7 @@ class Main extends Component {
           showWatchData={() => this.setState({ displayMode: 'watch'})}
           showMediaUploads={() => this.setState({ displayMode: 'media_uploads'})}
           showEmotionData={() => this.setState({ displayMode: 'emotion'})}
+          showSmsData={() => this.setState({ displayMode: 'sms'})}
         />
         <div className="content-container">
           <DataDisplay

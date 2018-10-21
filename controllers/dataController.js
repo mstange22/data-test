@@ -76,4 +76,14 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
       }
     });
   });
+
+  app.get('/sms', (req, res) => {
+    const queryString = ('SELECT * FROM sms_message');
+    dbConnection.query(queryString, (err, data) => {
+      if (err) throw(err);
+      else {
+        res.json(data);
+      }
+    });
+  });
 }

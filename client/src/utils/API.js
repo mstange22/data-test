@@ -6,4 +6,5 @@ export default {
   getActiveAccounts: () => axios.get('/accounts/active'),
   getMediaUploadsData: () => axios.get('/media/uploads'),
   getEmotionData: () => axios.get('/emotion'),
+  getSmsData: () => axios.get('/sms'),
 };

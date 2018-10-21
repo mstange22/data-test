@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import DataHeader from '../components/DataHeader';
+import DataPlaceholder from '../components/DataPlaceholder';
 import WatchData from './WatchData';
 import EmotionData from './EmotionData';
 import MediaUploadsData from './MediaUploadsData';
-import DataPlaceholder from '../components/DataPlaceholder';
+import SmsData from './SmsData';
 
 class DataDisplay extends Component {
   constructor(props) {
@@ -34,6 +35,9 @@ class DataDisplay extends Component {
     );
     if (displayMode === 'media_uploads') return (
       <MediaUploadsData setDisplayString={displayString => this.setState({ displayString })} />
+    );
+    if (displayMode === 'sms') return (
+      <SmsData setDisplayString={displayString => this.setState({ displayString })} />
     );
   }
 
