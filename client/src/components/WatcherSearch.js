@@ -9,6 +9,8 @@ class WatcherSearch extends Component {
       value: '',
       suggestions: [],
       watcherInfo: [],
+      watcherIds: [],
+      familyCodes: [],
     };
     this.submitted = false;
   }
@@ -24,14 +26,19 @@ class WatcherSearch extends Component {
   }
 
   getWatcherInfo = () => {
-    const watcherInfo = this.props.activeUserData.reduce((accum, d) => {
-      if (accum.findIndex(elem => elem.watcher_id === d.watcher_id) === -1) {
-        return ([...accum, { watcher_id: d.watcher_id, familyCode: d['Family Code'] }]);
-      } else {
-        return accum;
-      }
-    }, []);
-    this.setState({ watcherInfo });
+    console.log('activeWatcherAccounts:', this.props.activeWatcherAccounts);
+    // let watcherInfo = [{
+    //   title: 'Family Codes',
+    //   familyCodes: [],
+    // }, {
+    //   title: 'Watcher IDs',
+    //   watcherIds: [],
+    // }];
+
+    const watcherIds = this.props.activeUserData.reduce((accum, d) => !accum.includes(d['Watcher ID']) ? [...accum, d['Watcher ID']] : accum, []);
+    const familyCodes = this.props.activeUserData.reduce((accum, d) => !accum.includes(d['Family Code']) ? [...accum, d['Family Code']] : accum, []);
+    const watcherInfo = familyCodes.concat(watcherIds);
+    this.setState({ watcherIds, familyCodes, watcherInfo });
   }
 
   // Teach Autosuggest how to calculate suggestions for any given input value.
@@ -39,18 +46,22 @@ class WatcherSearch extends Component {
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
     if (inputLength === 0) return [];
-    return this.state.watcherInfo.filter(id => id.watcher_id.toString().toLowerCase().slice(0, inputLength) === inputValue);
+    return this.state.watcherInfo.filter(id => id.toString().toLowerCase().slice(0, inputLength) === inputValue);
   };
 
-  getSuggestionValue = suggestion => suggestion.watcher_id.toString();
+  getSuggestionValue = suggestion => suggestion.toString();
 
   handleAccountChange = (e) => {
     if (e) e.preventDefault();
     console.log('handleAccountChange', this.state.value);
     this.submitted = true;
-    if (this.state.watcherInfo.findIndex(element => element.watcher_id.toString() === this.state.value) !== -1) {
+    if (this.state.watcherIds.findIndex(element => element.toString() === this.state.value) !== -1) {
       document.getElementById('chart-container').innerHTML = '';
-      this.props.onWatcherIdSelected(parseInt(this.state.value, 10));
+      this.props.onWatcherIdSelected(parseInt(this.state.value, 10), 'watcherId');
+      this.submitted = false;
+    } else if (this.state.familyCodes.findIndex(element => element === this.state.value) !== -1) {
+      document.getElementById('chart-container').innerHTML = '';
+      this.props.onWatcherIdSelected(this.state.value, 'familyCode');
       this.submitted = false;
     }
   }
@@ -75,7 +86,7 @@ class WatcherSearch extends Component {
 
   renderSuggestion = suggestion => (
     <div>
-      {suggestion.watcher_id.toString()}
+      {suggestion.toString()}
     </div>
   );
 
@@ -83,7 +94,7 @@ class WatcherSearch extends Component {
     // console.log('state value:', this.state.value);
     const { value, suggestions } = this.state;
     const inputProps = {
-      placeholder: 'Type a family code or watcher ID',
+      placeholder: 'Enter a Family Code or Watcher ID',
       value,
       onChange: this.onChange
     }

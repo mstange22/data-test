@@ -24,8 +24,8 @@ class EmotionData extends Component {
       currentWatcherId: 0,
       currentFamilyCode: '',
       renderMode: 'familyCode',
+      hasAddedFamilyCodes: false,
     };
-    this.hasAddedFamilyCodes = false;
   }
 
   componentDidMount() {
@@ -33,7 +33,7 @@ class EmotionData extends Component {
   }
 
   componentDidUpdate() {
-    if (this.state.activeWatcherAccounts.length && this.state.emotionData.length && !this.hasAddedFamilyCodes) {
+    if (this.state.activeWatcherAccounts.length && this.state.emotionData.length && !this.state.hasAddedFamilyCodes) {
       this.addFamilyCodesToEmotionData();
     }
   }
@@ -48,8 +48,7 @@ class EmotionData extends Component {
       }
     });
     console.log('emotion data:', emotionData);
-    this.setState({ emotionData });
-    this.hasAddedFamilyCodes = true;
+    this.setState({ emotionData, hasAddedFamilyCodes: true });
   }
 
   getEmotionData = (range = null) => {
@@ -105,13 +104,22 @@ class EmotionData extends Component {
 
     // check for watcher ID filter
     if (renderMode === 'watcherId' && this.state.currentWatcherId !== 0) {
-      filteredEmotionData = filteredEmotionData.filter(d => d['Watcher ID'] === this.state.currentWatcherId);
+      filteredEmotionData = filteredEmotionData.filter(d => {
+        if (d['Watcher ID'] === this.state.currentWatcherId) {
+          console.log('**** match ****');
+          return true;
+        }
+        return false;
+      });
     }
 
     // check for family code filter
     if (renderMode === 'familyCode' && this.state.currentFamilyCode !== '') {
-      filteredEmotionData = filteredEmotionData.filter(d => d['Family Code'] === this.state.currentWFamilyCode);
+      console.log('watcher:', this.state.currentFamilyCode);
+      filteredEmotionData = filteredEmotionData.filter(d => d['Family Code'] === this.state.currentFamilyCode);
     }
+
+    console.log('filteredEmotionData:', filteredEmotionData);
 
     // check for date range filter
     if (range) {
@@ -145,7 +153,7 @@ class EmotionData extends Component {
     canvas
       .data(dm)
       .width(window.innerWidth - 300)
-      .height(480)
+      .height(window.innerHeight - 580)
       .rows(['Total Smiles'])
       .columns(['Date'])
       .color(renderMode === 'watcherId' ? 'Watcher ID' : 'Family Code')
@@ -160,8 +168,12 @@ class EmotionData extends Component {
   }
 
   // change this to take in either a watcher id or a family code
-  handleWatcherSelected = (currentWatcherId) => {
-    this.setState({ currentWatcherId });
+  handleWatcherSelected = (watcher, renderMode) => {
+    if (renderMode === 'watcherId') {
+      this.setState({ currentWatcherId: watcher, renderMode });
+    } else {
+      this.setState({ currentFamilyCode: watcher, renderMode });
+    }
   }
 
   renderDashboard = () => {
@@ -183,11 +195,13 @@ class EmotionData extends Component {
             />
             {' Smile Count'}
           </label>
-          <WatcherSearch
-            activeUserData={activeUserEmotionData}
-            activeWatcherAccounts={this.state.activeWatcherAccounts}
-            onWatcherIdSelected={this.handleWatcherSelected}
-          />
+          {this.state.hasAddedFamilyCodes && (
+            <WatcherSearch
+              activeUserData={activeUserEmotionData}
+              activeWatcherAccounts={this.state.activeWatcherAccounts}
+              onWatcherIdSelected={this.handleWatcherSelected}
+            />
+          )}
         </div>
         <DateRangePicker
           onDateRangePicked={(range) => this.renderEmotionData(range)}
