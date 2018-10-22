@@ -46,7 +46,7 @@ class EmotionData extends Component {
         d['Family Code'] = activeWatcherAccounts[idx].read_write_share_code;
       }
     });
-    console.log('emotion data:', emotionData);
+    // console.log('emotion data:', emotionData);
     this.setState({ emotionData, hasAddedFamilyCodes: true });
   }
 
@@ -88,11 +88,11 @@ class EmotionData extends Component {
   }
 
   renderEmotionData = (range = null) => {
-    const { emotionData } = this.state;
-    const { renderMode } = this.state;
+    const { emotionData, renderMode } = this.state;
+    if (emotionData.length < 1) return null;
     let filteredEmotionData = [];
 
-    if (emotionData.length < 1) return null;
+    // filter data dependent on renderMode
     if (renderMode === 'watcherId') {
       filteredEmotionData = emotionData.filter(d => this.state.activeWatcherIds.includes(d['Watcher ID']));
     } else {
@@ -100,23 +100,14 @@ class EmotionData extends Component {
     }
     // console.log('filtered emotion data:', filteredEmotionData);
     if (filteredEmotionData.length < 1) return null;
-
     // check for watcher ID filter
     if (renderMode === 'watcherId' && this.state.currentWatcherId !== 0) {
-      filteredEmotionData = filteredEmotionData.filter(d => {
-        if (d['Watcher ID'] === this.state.currentWatcherId) {
-          return true;
-        }
-        return false;
-      });
+      filteredEmotionData = filteredEmotionData.filter(d => d['Watcher ID'] === this.state.currentWatcherId);
     }
-
     // check for family code filter
     if (renderMode === 'familyCode' && this.state.currentFamilyCode !== '') {
-      console.log('watcher:', this.state.currentFamilyCode);
       filteredEmotionData = filteredEmotionData.filter(d => d['Family Code'] === this.state.currentFamilyCode);
     }
-
     // check for date range filter
     if (range) {
       const startDate = range.startDate.format('M/DD/YY');
@@ -188,7 +179,7 @@ class EmotionData extends Component {
               checked={this.state.selectedOption === 'smileCount'}
               onChange={this.handleInputChange}
             />
-            {' Smile Count'}
+            {'Smile Count'}
           </label>
           {this.state.hasAddedFamilyCodes && (
             <WatcherSearch
