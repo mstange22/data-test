@@ -30,12 +30,7 @@ class Main extends Component {
     return (
       <div className="page-container">
         <Navbar />
-        <Sidebar
-          showWatchData={() => this.setState({ displayMode: 'watch'})}
-          showMediaUploads={() => this.setState({ displayMode: 'media_uploads'})}
-          showEmotionData={() => this.setState({ displayMode: 'emotion'})}
-          showSmsData={() => this.setState({ displayMode: 'sms'})}
-        />
+        <Sidebar handleSidebarClick={(displayMode) => this.setState({displayMode})} />
         <div className="content-container">
           <DataDisplay
             displayMode={this.state.displayMode}
