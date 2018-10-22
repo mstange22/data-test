@@ -33,7 +33,7 @@ class DeviceData extends Component {
 
   getDeviceData = () => {
     document.getElementById('chart-container').innerHTML = '';
-    this.setState({ smsData: [], loadingData: true });
+    this.setState({ deviceData: [], loadingData: true });
     API.getDeviceData()
       .then(res => {
         this.props.setDisplayString('Device Data');
@@ -56,6 +56,7 @@ class DeviceData extends Component {
   }
 
   triggerError = (errorMessage) => {
+    document.getElementById('chart-container').innerHTML = '';
     if (!this.state.displayError) {
       this.setState({ displayError: true, errorMessage });
     }
