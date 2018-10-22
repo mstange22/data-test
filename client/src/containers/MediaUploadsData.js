@@ -2,20 +2,25 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
+import Spinner from '../components/Spinner';
 
 const env = muze();
+const CHART_CONTAINER_HEIGHT = 480;
+const CHART_CONTAINER_WIDTH = window.innerWidth - 280;
 
 class MediaUploadsData extends Component {
   constructor(props) {
     super(props);
     this.state = {
       mediaUploads: [],
+      loadingData: false,
     };
   }
 
   componentDidMount() {
     document.getElementById('chart-container').innerHTML = '';
-    this.setState({ mediaUploads: [], displayMode: 'media_uploads'});
+    this.props.setDisplayString('Number of Media Uploads (Active Accounts)');
+    this.setState({ mediaUploads: [], loadingData: true });
     API.getMediaUploadsData()
       .then(res => {
           const mediaUploads = res.data.reduce((accum, d) => {
@@ -49,9 +54,7 @@ class MediaUploadsData extends Component {
           ]);
           this.setState({
             mediaUploads,
-          }, () => {
-            console.log('mediaUploads:', this.state.mediaUploads);
-            this.props.setDisplayString('Number of Media Uploads (Active Accounts)');
+            loadingData: false,
           });
       })
       .catch(err => console.log(err.message));
@@ -84,9 +87,17 @@ class MediaUploadsData extends Component {
     ;
   }
 
+  renderSpinner = () => {
+    if (!this.state.loadingData) return null;
+    return (
+      <Spinner height={CHART_CONTAINER_HEIGHT} width={CHART_CONTAINER_WIDTH} />
+    );
+  }
+
   render() {
     return (
       <div id="chart-container">
+        {this.renderSpinner()}
         {this.renderMediaUploadsData()}
       </div>
     );
