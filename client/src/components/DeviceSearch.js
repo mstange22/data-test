@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Autosuggest from 'react-autosuggest';
 
-class DeviceIdSearch extends Component {
+class DeviceSearch extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -114,9 +114,9 @@ class DeviceIdSearch extends Component {
   }
 }
 
-DeviceIdSearch.propTypes = {
+DeviceSearch.propTypes = {
   onDeviceIdSelected: PropTypes.func.isRequired,
   deviceData: PropTypes.array.isRequired,
 }
 
-export default DeviceIdSearch;
+export default DeviceSearch;

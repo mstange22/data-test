@@ -6,7 +6,7 @@ import muze, { DataModel } from 'muze';
 import moment from 'moment';
 import DateRangePicker from '../components/DateRangePicker';
 import Notification from '../components/Notification';
-import DeviceIdSearch from '../components/DeviceIdSearch';
+import DeviceSearch from '../components/DeviceSearch';
 import Spinner from '../components/Spinner';
 
 const env = muze();
@@ -115,7 +115,7 @@ class DeviceData extends Component {
       .height(CHART_CONTAINER_HEIGHT)
       .rows(['Device Pings'])
       .columns(['Date'])
-      .color('Device ID')
+      .color('Family Code')
       .mount('#chart-container')
     ;
   }
@@ -128,7 +128,7 @@ class DeviceData extends Component {
 
   renderDashboard = () => {
     const { deviceData } = this.state;
-    if (deviceData.length < 1) return null;
+    if (deviceData.length < 1 || this.state.displayError) return null;
     return (
       <div className="data-dashboard">
         <div className="form-input-container">
@@ -141,7 +141,7 @@ class DeviceData extends Component {
             />
             {'Device Pings'}
           </label>
-          <DeviceIdSearch
+          <DeviceSearch
             deviceData={deviceData}
             onDeviceIdSelected={(currentDeviceId) => this.setState({ currentDeviceId })}
           />
