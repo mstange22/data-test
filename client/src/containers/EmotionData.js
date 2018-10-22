@@ -181,7 +181,7 @@ class EmotionData extends Component {
     return (
       <div className="data-dashboard">
         <div className="form-input-container">
-          <label>
+          <label className="checkbox-label">
             <input
               name="smileCount"
               type="checkbox"

@@ -234,8 +234,15 @@ h3.rx-header-title {
   align-items: center;
 }
 
+.checkbox-label {
+  display: flex;
+  align-items: center;
+}
+
 input[type=checkbox] {
   margin-top: 0;
+  margin-right: 5px;
+  margin-bottom: 2px;
 }
 
 .watcher-search-container {

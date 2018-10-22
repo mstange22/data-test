@@ -21,6 +21,7 @@ class SmsData extends Component {
       displayError: false,
       errorMessage: '',
       currentAccountId: 0,
+      selectedOption: 'smsCount',
     };
   }
 
@@ -133,6 +134,12 @@ class SmsData extends Component {
     ;
   }
 
+  handleInputChange = (e) => {
+    e.preventDefault();
+    const { name } = e.target;
+    this.setState({ selectedOption: name });
+  }
+
   renderDashboard = () => {
     const { smsData } = this.state;
     if (smsData.length < 1) return null;
@@ -143,7 +150,7 @@ class SmsData extends Component {
     return (
       <div className="data-dashboard">
         <div className="form-input-container">
-          <label>
+          <label className="checkbox-label">
             <input
               name="smsCount"
               type="checkbox"
