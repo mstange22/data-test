@@ -45,10 +45,11 @@ class Sidebar extends Component {
               </div> */}
             </div>
           </li>
-          <li><a onClick={this.props.showWatchData}>Watch Stats</a></li>
-          <li><a onClick={this.props.showMediaUploads}>Media Uploads</a></li>
-          <li><a onClick={this.props.showEmotionData}>Emotion Stats</a></li>
-          <li><a onClick={this.props.showSmsData}>SMS Stats</a></li>
+          <li><a onClick={() => this.props.handleSidebarClick('watch')}>Watch Stats</a></li>
+          <li><a onClick={() => this.props.handleSidebarClick('mediaUploads')}>Media Uploads</a></li>
+          <li><a onClick={() => this.props.handleSidebarClick('emotion')}>Emotion Stats</a></li>
+          <li><a onClick={() => this.props.handleSidebarClick('sms')}>SMS Stats</a></li>
+          <li><a onClick={() => this.props.handleSidebarClick('device')}>Device Stats</a></li>
         </ul>
       </div>
     );
@@ -56,10 +57,7 @@ class Sidebar extends Component {
 }
 
 Sidebar.propTypes = {
-  showWatchData: PropTypes.func.isRequired,
-  showEmotionData: PropTypes.func.isRequired,
-  showMediaUploads: PropTypes.func.isRequired,
-  showSmsData: PropTypes.func.isRequired,
+  handleSidebarClick: PropTypes.func.isRequired,
   // toggleSidebar: PropTypes.func.isRequired,
 };
 

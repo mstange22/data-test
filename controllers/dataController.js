@@ -38,23 +38,24 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
   });
 
   app.get('/accounts/sms', (req, res) => {
-    const queryString = (
-      'SELECT \
-        * \
-      FROM \
-        account \
-      WHERE \
-        is_patient = \'0\' \
-      AND \
-        phone_number is not null'
-    );
+    const queryString = 'SELECT * FROM account WHERE is_patient = \'0\' AND phone_number is not null';
     dbConnection.query(queryString, (err, data) => {
       if (err) throw(err);
       else {
         res.json(data);
       }
     });
-  })
+  });
+
+  app.get('/device', (req, res) => {
+    const queryString = 'SELECT * FROM status';
+    watchStatsConnection.query(queryString, (err, data) => {
+      if (err) throw(err);
+      else {
+        res.json(data);
+      }
+    })
+  });
 
   app.get('/media/uploads', (req, res) => {
     const queryString = (

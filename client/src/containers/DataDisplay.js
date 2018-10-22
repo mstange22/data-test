@@ -6,6 +6,7 @@ import WatchData from './WatchData';
 import EmotionData from './EmotionData';
 import MediaUploadsData from './MediaUploadsData';
 import SmsData from './SmsData';
+import DeviceData from './DeviceData';
 
 class DataDisplay extends Component {
   constructor(props) {
@@ -33,11 +34,14 @@ class DataDisplay extends Component {
     if (displayMode === 'emotion') return (
       <EmotionData setDisplayString={displayString => this.setState({ displayString })} />
     );
-    if (displayMode === 'media_uploads') return (
+    if (displayMode === 'mediaUploads') return (
       <MediaUploadsData setDisplayString={displayString => this.setState({ displayString })} />
     );
     if (displayMode === 'sms') return (
       <SmsData setDisplayString={displayString => this.setState({ displayString })} />
+    );
+    if (displayMode === 'device') return (
+      <DeviceData setDisplayString={displayString => this.setState({ displayString })} />
     );
   }
 

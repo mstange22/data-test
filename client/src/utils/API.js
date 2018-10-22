@@ -8,4 +8,5 @@ export default {
   getMediaUploadsData: () => axios.get('/media/uploads'),
   getEmotionData: () => axios.get('/emotion'),
   getSmsData: () => axios.get('/sms'),
+  getDeviceData: () => axios.get('device'),
 };
