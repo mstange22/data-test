@@ -5,7 +5,6 @@ import moment from 'moment';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
 import DateRangePicker from '../components/DateRangePicker';
-// import WatcherIdSelector from '../components/WatcherIdSelector';
 import WatcherSearch from '../components/WatcherSearch';
 import Notification from '../components/Notification';
 
@@ -70,7 +69,7 @@ class EmotionData extends Component {
         });
       })
       .catch(err => console.log(err.message));
-    API.getActiveAccounts()
+    API.getActiveWatcherAccounts()
     .then(res => {
       console.log('active customer accounts:', res.data);
       this.setState({
@@ -99,14 +98,13 @@ class EmotionData extends Component {
     } else {
       filteredEmotionData = emotionData.filter(d => this.state.activeFamilyCodes.includes(d['Family Code']));
     }
-    console.log('filtered emotion data:', filteredEmotionData);
+    // console.log('filtered emotion data:', filteredEmotionData);
     if (filteredEmotionData.length < 1) return null;
 
     // check for watcher ID filter
     if (renderMode === 'watcherId' && this.state.currentWatcherId !== 0) {
       filteredEmotionData = filteredEmotionData.filter(d => {
         if (d['Watcher ID'] === this.state.currentWatcherId) {
-          console.log('**** match ****');
           return true;
         }
         return false;
@@ -118,8 +116,6 @@ class EmotionData extends Component {
       console.log('watcher:', this.state.currentFamilyCode);
       filteredEmotionData = filteredEmotionData.filter(d => d['Family Code'] === this.state.currentFamilyCode);
     }
-
-    console.log('filteredEmotionData:', filteredEmotionData);
 
     // check for date range filter
     if (range) {
@@ -167,7 +163,6 @@ class EmotionData extends Component {
     this.setState({ selectedOption: name });
   }
 
-  // change this to take in either a watcher id or a family code
   handleWatcherSelected = (watcher, renderMode) => {
     if (renderMode === 'watcherId') {
       this.setState({ currentWatcherId: watcher, renderMode });
@@ -225,7 +220,6 @@ class EmotionData extends Component {
   }
 
   render() {
-    // console.log('emotion state:', this.state);
     return (
       <div className="emotion-dashboard">
         <div id="chart-container">
