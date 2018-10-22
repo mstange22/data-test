@@ -44,7 +44,7 @@ class AccountIdSearch extends Component {
 
   handleAccountChange = (e) => {
     if (e) e.preventDefault();
-    console.log('handleAccountChange', this.state.value);
+    // console.log('handleAccountChange', this.state.value);
     this.submitted = true;
     if (this.state.accountIds.findIndex(element => element.toString() === this.state.value) !== -1) {
       document.getElementById('chart-container').innerHTML = '';
