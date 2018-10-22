@@ -188,7 +188,7 @@ class WatchData extends Component {
             <WatcherSearch
               activeUserData={activeUserWatchData}
               activeWatcherAccounts={this.state.activeWatcherAccounts}
-              onWatcherIdSelected={this.handleWatcherSelected}
+              onWatcherSelected={this.handleWatcherSelected}
             />
           )}
         </div>

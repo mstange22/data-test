@@ -21,7 +21,7 @@ class WatcherSearch extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.submitted) {
-      this.handleAccountChange();
+      this.handleWatcherChange();
     }
   }
 
@@ -57,17 +57,17 @@ class WatcherSearch extends Component {
 
   getSuggestionValue = suggestion => suggestion.toString();
 
-  handleAccountChange = (e) => {
+  handleWatcherChange = (e) => {
     if (e) e.preventDefault();
     // console.log('handleAccountChange', this.state.value);
     this.submitted = true;
     if (this.state.watcherIds.findIndex(element => element.toString() === this.state.value) !== -1) {
       document.getElementById('chart-container').innerHTML = '';
-      this.props.onWatcherIdSelected(parseInt(this.state.value, 10), 'watcherId');
+      this.props.onWatcherSelected(parseInt(this.state.value, 10), 'watcherId');
       this.submitted = false;
     } else if (this.state.familyCodes.findIndex(element => element === this.state.value) !== -1) {
       document.getElementById('chart-container').innerHTML = '';
-      this.props.onWatcherIdSelected(this.state.value, 'familyCode');
+      this.props.onWatcherSelected(this.state.value, 'familyCode');
       this.submitted = false;
     }
   }
@@ -126,7 +126,7 @@ class WatcherSearch extends Component {
           renderSectionTitle={this.renderSectionTitle}
           getSectionSuggestions={this.getSectionSuggestions}
           inputProps={inputProps}
-          onSuggestionSelected={this.handleAccountChange}
+          onSuggestionSelected={this.handleWatcherChange}
         />
       </div>
     );
@@ -134,7 +134,7 @@ class WatcherSearch extends Component {
 }
 
 WatcherSearch.propTypes = {
-  onWatcherIdSelected: PropTypes.func.isRequired,
+  onWatcherSelected: PropTypes.func.isRequired,
   activeUserData: PropTypes.array.isRequired,
   activeWatcherAccounts: PropTypes.array.isRequired,
 }
