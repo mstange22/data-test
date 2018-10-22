@@ -6,8 +6,11 @@ import muze, { DataModel } from 'muze';
 import DateRangePicker from '../components/DateRangePicker';
 import Notification from '../components/Notification';
 import WatcherSearch from '../components/WatcherSearch';
+import Spinner from '../components/Spinner';
 
 const env = muze();
+const CHART_CONTAINER_HEIGHT = 480;
+const CHART_CONTAINER_WIDTH = window.innerWidth - 280;
 
 class WatchData extends Component {
   constructor(props) {
@@ -23,6 +26,7 @@ class WatchData extends Component {
       currentFamilyCode: '',
       renderMode: 'familyCode',
       hasAddedFamilyCodes: false,
+      loadingData: false,
     };
   }
 
@@ -51,7 +55,7 @@ class WatchData extends Component {
 
   getWatchData = () => {
     document.getElementById('chart-container').innerHTML = '';
-    this.setState({ watchData: [] });
+    this.setState({ watchData: [], loadingData: true });
     API.getWatchData()
       .then(res => {
         this.props.setDisplayString('Minutes Watched by Day (Active Accounts)');
@@ -65,6 +69,7 @@ class WatchData extends Component {
               d['Watcher ID'] = d.watcher_id;
               return d;
             }),
+            loadingData: false,
         });
       })
       .catch(err => console.log(err.message));
@@ -196,6 +201,13 @@ class WatchData extends Component {
     );
   }
 
+  renderSpinner = () => {
+    if (!this.state.loadingData) return null;
+    return (
+      <Spinner height={CHART_CONTAINER_HEIGHT} width={CHART_CONTAINER_WIDTH} />
+    );
+  }
+
   renderNotification = () => {
     if (!this.state.displayError) {
       return null;
@@ -212,6 +224,7 @@ class WatchData extends Component {
     return (
       <div className="emotion-dashboard">
         <div id="chart-container">
+          {this.renderSpinner()}
           {this.renderWatchData()}
         </div>
         {this.renderDashboard()}
