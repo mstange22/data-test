@@ -190,7 +190,7 @@ class EmotionData extends Component {
             <WatcherSearch
               activeUserData={activeUserEmotionData}
               activeWatcherAccounts={this.state.activeWatcherAccounts}
-              onWatcherIdSelected={this.handleWatcherSelected}
+              onWatcherSelected={this.handleWatcherSelected}
             />
           )}
         </div>
