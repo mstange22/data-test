@@ -19,7 +19,7 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
     });
   });
 
-  app.get('/accounts/active', (req, res) => {
+  app.get('/accounts/watchers', (req, res) => {
     const queryString = (
       'SELECT \
         a.patient_account_id, \
@@ -36,6 +36,25 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
       }
     });
   });
+
+  app.get('/accounts/sms', (req, res) => {
+    const queryString = (
+      'SELECT \
+        * \
+      FROM \
+        account \
+      WHERE \
+        is_patient = \'0\' \
+      AND \
+        phone_number is not null'
+    );
+    dbConnection.query(queryString, (err, data) => {
+      if (err) throw(err);
+      else {
+        res.json(data);
+      }
+    });
+  })
 
   app.get('/media/uploads', (req, res) => {
     const queryString = (
