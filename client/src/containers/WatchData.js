@@ -40,7 +40,7 @@ class WatchData extends Component {
       })
       .catch(err => console.log(err.message));
 
-    API.getActiveAccounts()
+    API.getActiveWatcherAccounts()
       .then(res => {
         // console.log('active customer accounts:', res.data);
         this.setState({
