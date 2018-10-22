@@ -4,9 +4,8 @@ import { connect } from 'react-redux';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
 import moment from 'moment';
-import DateRangePicker from '../components/DateRangePicker';
+import DataDashboard from '../components/DataDashboard';
 import Notification from '../components/Notification';
-import DeviceSearch from '../components/DeviceSearch';
 import Spinner from '../components/Spinner';
 
 const env = muze();
@@ -135,28 +134,24 @@ class DeviceData extends Component {
     const { deviceData } = this.state;
     if (deviceData.length < 1 || this.state.displayError) return null;
     return (
-      <div className="data-dashboard">
-        <div className="form-input-container">
-          <label className="checkbox-label">
-            <input
-              name="deviceData"
-              type="checkbox"
-              checked={this.state.selectedOption === 'deviceData'}
-              onChange={this.handleInputChange}
-            />
-            {'Device Pings'}
-          </label>
-          <DeviceSearch
-            deviceData={deviceData}
-            onDeviceSelected={this.onDeviceSelected}
-          />
-        </div>
-        <DateRangePicker
-          onDateRangePicked={(range) => this.renderDeviceData(range)}
-          minDate={moment(deviceData[0].Date, 'M/DD/YY')}
-          maxDate={moment(deviceData[deviceData.length - 1].Date, 'M/DD/YY')}
-        />
-      </div>
+      <DataDashboard
+        data={deviceData}
+        checkboxes={[{
+          label: 'Device Pings',
+          name: 'deviceData',
+          checked: this.state.selectedOption === 'deviceData',
+          onChange: (e) => {
+            e.preventDefault();
+            const { name } = e.target;
+            this.setState({ selectedOption: name });
+          },
+        }]}
+        searchType="device"
+        onSearchTargetSelected={this.onDeviceSelected}
+        onDateRangePicked={range => this.renderDeviceData(range)}
+        clearFilterButtonDisabled={this.state.currentFamilyCode === '' && this.state.currentWatcherId === 0}
+        clearFilterButtonOnClick={() => this.setState({ currentFamilyCode: '', currentWatcherId: 0})}
+      />
     );
   }
 
