@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
 import moment from 'moment';
 import DateRangePicker from '../components/DateRangePicker';
 import Notification from '../components/Notification';
 import AccountIdSearch from '../components/AccountIdSearch';
+import { setState } from '../redux/actions';
 const env = muze();
 
 class SmsData extends Component {
@@ -24,6 +26,13 @@ class SmsData extends Component {
 
   componentDidMount() {
     this.getSmsData();
+    this.props.setState({ greeting: 'now in SMS Data'});
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.state !== prevProps.state) {
+      console.log('newState:', this.props.state);
+    }
   }
 
   getSmsData = () => {
@@ -187,4 +196,12 @@ SmsData.propTypes = {
   setDisplayString: PropTypes.func.isRequired,
 }
 
-export default SmsData;
+const mapStateToProps = (state) => ({
+  state,
+});
+
+const mapDispatchToProps = {
+  setState,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SmsData);

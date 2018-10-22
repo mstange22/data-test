@@ -52,9 +52,12 @@
     "react-dom": "^16.5.2",
     "react-image-lightbox": "^4.5.0",
     "react-paginate": "^5.0.0",
+    "react-redux": "^5.0.7",
     "react-reorder": "^3.0.0-alpha.6",
     "react-router-dom": "^4.2.2",
     "react-spinners": "^0.4.7",
+    "redux": "^4.0.1",
+    "redux-persist": "^5.10.0",
     "request": "^2.83.0"
   }
 }
