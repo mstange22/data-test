@@ -8,47 +8,65 @@ class DeviceSearch extends Component {
     this.state = {
       value: '',
       suggestions: [],
-      accountIds: [],
+      deviceInfo: [],
+      deviceIds: [],
+      familyCodes: [],
     };
     this.submitted = false;
   }
 
   componentDidMount() {
-    this.getDeviceIds();
+    this.getDeviceInfo();
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (this.submitted) {
-      this.handleDeviceIdChange();
+      this.handleDeviceChange();
     }
   }
 
-  getDeviceIds = () => {
+  getDeviceInfo = () => {
     const deviceIds = this.props.deviceData.reduce((accum, d) => !accum.includes(d['Device ID']) ? [...accum, d['Device ID']] : accum, []);
+    const familyCodes = this.props.deviceData.reduce((accum, d) => !accum.includes(d['Family Code']) ? [...accum, d['Family Code']] : accum, []);
+    const deviceInfo = [{
+      title: 'Family Codes',
+      info: familyCodes,
+    }, {
+      title: 'Device IDs',
+      info: deviceIds,
+    }];
     // console.log('accountIds:', accountIds);
-    this.setState({ deviceIds });
+    this.setState({ deviceIds, familyCodes, deviceInfo });
   }
 
   getSuggestions = (value) => {
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
     if (inputLength === 0) return [];
-    const suggestions = this.state.deviceIds
-      .filter(id => id.toString().toLowerCase().slice(0, inputLength) === inputValue)
-      .sort();
-    // console.log('suggestions:', suggestions);
+    const suggestions = this.state.deviceInfo
+      .map(section => {
+        return {
+          title: section.title,
+          info: section.info.filter(id => id.toString().toLowerCase().slice(0, inputLength) === inputValue)
+        };
+      })
+      .filter(section => section.info.length > 0);
     return suggestions;
   }
 
   getSuggestionValue = suggestion => suggestion.toString();
 
-  handleDeviceIdChange = (e) => {
+  handleDeviceChange = (e) => {
     if (e) e.preventDefault();
-    console.log('handleDeviceIdChange', this.state.value);
+    // console.log('handleDeviceIdChange', this.state.value);
     this.submitted = true;
-    if (this.state.deviceIds.findIndex(element => element.toString() === this.state.value) !== -1) {
+    if (this.state.familyCodes.findIndex(e => e.toString() === this.state.value) !== -1) {
       document.getElementById('chart-container').innerHTML = '';
-      this.props.onDeviceIdSelected(this.state.value);
+      this.props.onDeviceSelected(this.state.value, 'familyCode');
+      this.submitted = false;
+    } else if (this.state.deviceIds.findIndex(element => element.toString() === this.state.value) !== -1) {
+      document.getElementById('chart-container').innerHTML = '';
+      this.props.onDeviceSelected(this.state.value, 'deviceId');
       this.submitted = false;
     }
   }
@@ -91,23 +109,23 @@ class DeviceSearch extends Component {
     // console.log('state value:', this.state.value);
     const { value, suggestions } = this.state;
     const inputProps = {
-      placeholder: 'Enter a Device ID',
+      placeholder: 'Enter a Family Code or Device ID',
       value,
       onChange: this.onChange
     }
     return (
       <div className="watcher-search-container">
         <Autosuggest
-          // multiSection={true}
+          multiSection={true}
           suggestions={suggestions}
           onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
           onSuggestionsClearRequested={this.onSuggestionsClearRequested}
           getSuggestionValue={this.getSuggestionValue}
           renderSuggestion={this.renderSuggestion}
-          // renderSectionTitle={this.renderSectionTitle}
-          // getSectionSuggestions={this.getSectionSuggestions}
+          renderSectionTitle={this.renderSectionTitle}
+          getSectionSuggestions={this.getSectionSuggestions}
           inputProps={inputProps}
-          onSuggestionSelected={this.handleDeviceIdChange}
+          onSuggestionSelected={this.handleDeviceChange}
         />
       </div>
     );
@@ -115,7 +133,7 @@ class DeviceSearch extends Component {
 }
 
 DeviceSearch.propTypes = {
-  onDeviceIdSelected: PropTypes.func.isRequired,
+  onDeviceSelected: PropTypes.func.isRequired,
   deviceData: PropTypes.array.isRequired,
 }
 

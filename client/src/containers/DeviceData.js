@@ -18,10 +18,11 @@ class DeviceData extends Component {
     super(props);
     this.state = {
       deviceData: [],
-      renderMode: 'Device ID',
       displayError: false,
       errorMessage: '',
       currentDeviceId: 0,
+      currentFamilyCode: '',
+      renderMode: 'familyCode',
       selectedOption: 'deviceData',
       loadingData: false,
     };
@@ -63,21 +64,17 @@ class DeviceData extends Component {
   }
 
   renderDeviceData = (range = null) => {
-    let filteredDeviceData = this.state.deviceData.slice();
-    if (filteredDeviceData.length < 1) {
-      return null;
-    }
+    const { deviceData, renderMode } = this.state;
+    if (deviceData.length < 1) return null;
+    let filteredDeviceData = deviceData.slice();
 
     // check for account ID filter
-    if (this.state.currentDeviceId !== 0) {
-      console.log('currentDeviceId:', this.state.currentDeviceId);
-      filteredDeviceData = filteredDeviceData.filter(d => {
-        if (d['Device ID'] === this.state.currentDeviceId) {
-          console.log('**** match ****');
-          return true;
-        }
-        return false;
-      });
+    if (renderMode === 'deviceId' && this.state.currentDeviceId !== 0) {
+      filteredDeviceData = filteredDeviceData.filter(d => d['Device ID'] === this.state.currentDeviceId);
+    }
+
+    if (renderMode === 'familyCode' && this.state.currentFamilyCode !== '') {
+      filteredDeviceData = filteredDeviceData.filter(d => d['Family Code'] === this.state.currentFamilyCode);
     }
 
     // check for date range filter
@@ -115,7 +112,7 @@ class DeviceData extends Component {
       .height(CHART_CONTAINER_HEIGHT)
       .rows(['Device Pings'])
       .columns(['Date'])
-      .color('Family Code')
+      .color(renderMode === 'familyCode' ? 'Family Code' : 'Device ID')
       .mount('#chart-container')
     ;
   }
@@ -124,6 +121,14 @@ class DeviceData extends Component {
     e.preventDefault();
     const { name } = e.target;
     this.setState({ selectedOption: name });
+  }
+
+  onDeviceSelected = (device, renderMode) => {
+    if (renderMode === 'familyCode') {
+      this.setState({ currentFamilyCode: device, currentDeviceId: 0, renderMode });
+    } else {
+      this.setState({ currentDeviceId: device, currentFamilyCode: '', renderMode });
+    }
   }
 
   renderDashboard = () => {
@@ -143,7 +148,7 @@ class DeviceData extends Component {
           </label>
           <DeviceSearch
             deviceData={deviceData}
-            onDeviceIdSelected={(currentDeviceId) => this.setState({ currentDeviceId })}
+            onDeviceSelected={this.onDeviceSelected}
           />
         </div>
         <DateRangePicker
