@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
 import moment from 'moment';
-
+import DateRangePicker from '../components/DateRangePicker';
+import Notification from '../components/Notification';
+import AccountIdSearch from '../components/AccountIdSearch';
 const env = muze();
 
 class SmsData extends Component {
@@ -12,33 +14,16 @@ class SmsData extends Component {
     this.state = {
       smsData: [],
       renderMode: 'Account ID',
-      activeWatcherAccounts: [],
-      activeWatcherIds: [],
-      activeFamilyCodes: [],
+      activeSmsAccounts: [],
+      activeSmsAccountIds: [],
+      displayError: false,
+      errorMessage: '',
+      currentAccountId: 0,
     };
   }
 
   componentDidMount() {
     this.getSmsData();
-  }
-
-  componentDidUpdate() {
-    if (this.state.activeWatcherAccounts.length && this.state.smsData.length && !this.state.hasAddedFamilyCodes) {
-      this.addFamilyCodesToEmotionData();
-    }
-  }
-
-  addFamilyCodesToEmotionData = () => {
-    const { activeWatcherAccounts } = this.state;
-    const smsData = this.state.smsData.slice();
-    smsData.forEach(d => {
-      const idx = activeWatcherAccounts.findIndex(account => account.patient_account_id === d.watcher_id);
-      if (idx !== -1) {
-        d['Family Code'] = activeWatcherAccounts[idx].read_write_share_code;
-      }
-    });
-    console.log('smsData:', smsData);
-    this.setState({ smsData, hasAddedFamilyCodes: true });
   }
 
   getSmsData = () => {
@@ -60,30 +45,64 @@ class SmsData extends Component {
               }),
           }, () => {
             // console.log('smsData:', this.state.smsData);
-            this.props.setDisplayString('Number of SMS Messages (Active Accounts)');
+            this.props.setDisplayString('Number of Incoming SMS Messages');
           });
       })
       .catch(err => console.log(err.message));
-    API.getActiveAccounts()
+    API.getActiveSmsAccounts()
     .then(res => {
-      console.log('active customer accounts:', res.data);
+      console.log('active sms accounts:', res.data);
       this.setState({
-        activeWatcherAccounts: res.data,
-        activeWatcherIds: res.data.reduce((acc, d) => [...acc, d.patient_account_id], []),
-        activeFamilyCodes: res.data.reduce((acc, d) => [...acc, d.read_write_share_code], []),
+        activeSmsAccounts: res.data,
+        activeSmsAccountIds: res.data.reduce((acc, d) => [...acc, d.account_id], []),
       });
     })
     .catch(err => console.log(err.message));
   }
 
-  renderSmsData = () => {
-    const { smsData } = this.state;
-    if (smsData.length < 1) {
+  triggerError = (errorMessage) => {
+    if (!this.state.displayError) {
+      this.setState({ displayError: true, errorMessage });
+    }
+  }
+
+  renderSmsData = (range = null) => {
+    let filteredSmsData = this.state.smsData.slice();
+    if (filteredSmsData.length < 1) {
+      return null;
+    }
+
+    // check for account ID filter
+    if (this.state.currentAccountId !== 0) {
+      filteredSmsData = filteredSmsData.filter(d => {
+        if (d['Account ID'] === this.state.currentAccountId) {
+          // console.log('**** match ****');
+          return true;
+        }
+        return false;
+      });
+    }
+
+    // check for date range filter
+    if (range) {
+      const startDate = range.startDate.format('M/DD/YY');
+      const endDate = range.endDate.format('M/DD/YY');
+      filteredSmsData = filteredSmsData.filter(d => {
+        if (moment(d.Date, 'M/DD/YY').diff(moment(startDate, 'M/DD/YY'), 'days') >= 0 && moment(endDate, 'M/DD/YY').diff(moment(d.Date, 'M/DD/YY'), 'days') >= 0) {
+          return true;
+        }
+        return false;
+      });
+    }
+
+    // throw error if no records remain after filter
+    if (filteredSmsData.length < 1) {
+      this.triggerError('There are no data events over the selected date range');
       return null;
     }
 
     const schema = [];
-    Object.keys(smsData[0]).forEach(key => {
+    Object.keys(filteredSmsData[0]).forEach(key => {
       const node = { name: key, type: 'dimension' };
       if (key === 'Messages Sent') {
         node.type = 'measure';
@@ -92,7 +111,7 @@ class SmsData extends Component {
     });
 
     // console.log('schema:', schema);
-    const dm = new DataModel(smsData, schema);
+    const dm = new DataModel(filteredSmsData, schema);
     const canvas = env.canvas();
     canvas
       .data(dm)
@@ -105,10 +124,60 @@ class SmsData extends Component {
     ;
   }
 
+  renderDashboard = () => {
+    const { smsData } = this.state;
+    if (smsData.length < 1) return null;
+    const activeUserSmsData = smsData
+      .slice()
+      .filter(d => this.state.activeSmsAccountIds.includes(d['Account ID']));
+    if (activeUserSmsData.length < 1) return null;
+    return (
+      <div className="data-dashboard">
+        <div className="form-input-container">
+          <label>
+            <input
+              name="smsCount"
+              type="checkbox"
+              checked={this.state.selectedOption === 'smsCount'}
+              onChange={this.handleInputChange}
+            />
+            {' SMS Count'}
+          </label>
+          <AccountIdSearch
+            activeUserData={activeUserSmsData}
+            activeAccountIds={this.state.activeSmsAccountIds}
+            onAccountIdSelected={(currentAccountId) => this.setState({ currentAccountId })}
+          />
+        </div>
+        <DateRangePicker
+          onDateRangePicked={(range) => this.renderSmsData(range)}
+          minDate={moment(activeUserSmsData[0].Date, 'M/DD/YY')}
+          maxDate={moment(activeUserSmsData[activeUserSmsData.length - 1].Date, 'M/DD/YY')}
+        />
+      </div>
+    );
+  }
+
+  renderNotification = () => {
+    if (!this.state.displayError) {
+      return null;
+    }
+    return (
+      <Notification
+        errorMessage={this.state.errorMessage}
+        onCloseNotification={() => this.setState({ displayError: false })}
+      />
+    )
+  }
+
   render() {
     return (
-      <div id="chart-container">
-        {this.renderSmsData()}
+      <div className="data-dashboard">
+        <div id="chart-container">
+          {this.renderSmsData()}
+        </div>
+        {this.renderDashboard()}
+        {this.renderNotification()}
       </div>
     );
   }
