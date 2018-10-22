@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-// import { Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import moment from 'moment';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
@@ -161,9 +161,9 @@ class EmotionData extends Component {
 
   handleWatcherSelected = (watcher, renderMode) => {
     if (renderMode === 'watcherId') {
-      this.setState({ currentWatcherId: watcher, renderMode });
+      this.setState({ currentWatcherId: watcher, currentFamilyCode: '', renderMode });
     } else {
-      this.setState({ currentFamilyCode: watcher, renderMode });
+      this.setState({ currentFamilyCode: watcher, currentWatcherId: 0, renderMode });
     }
   }
 
@@ -187,11 +187,21 @@ class EmotionData extends Component {
             {'Smile Count'}
           </label>
           {this.state.hasAddedFamilyCodes && (
-            <WatcherSearch
-              activeUserData={activeUserEmotionData}
-              activeWatcherAccounts={this.state.activeWatcherAccounts}
-              onWatcherSelected={this.handleWatcherSelected}
-            />
+            <div className="search-container">
+              <WatcherSearch
+                activeUserData={activeUserEmotionData}
+                activeWatcherAccounts={this.state.activeWatcherAccounts}
+                onWatcherSelected={this.handleWatcherSelected}
+              />
+              <Button
+                id="clear-filter-btn"
+                bsStyle="default"
+                disabled={this.state.currentFamilyCode === '' && this.state.currentWatcherId === 0}
+                onClick={() => this.setState({ currentFamilyCode: '', currentWatcherId: 0})}
+              >
+                Clear Filter
+              </Button>
+            </div>
           )}
         </div>
         <DateRangePicker

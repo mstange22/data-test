@@ -317,7 +317,11 @@ input[type=checkbox] {
   color: #777;
 }
 
-#watcher-id-submit-btn {
+.search-container {
+  display: flex;
+}
+
+#clear-filter-btn {
   margin-left: 5px;
   line-height: 1.4;
   padding: 5px 5px;
