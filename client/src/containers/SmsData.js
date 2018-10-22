@@ -157,7 +157,7 @@ class SmsData extends Component {
               checked={this.state.selectedOption === 'smsCount'}
               onChange={this.handleInputChange}
             />
-            {' SMS Count'}
+            {'SMS Count'}
           </label>
           <AccountIdSearch
             activeUserData={activeUserSmsData}
