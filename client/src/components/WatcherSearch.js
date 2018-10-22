@@ -26,7 +26,6 @@ class WatcherSearch extends Component {
   }
 
   getWatcherInfo = () => {
-    // console.log('activeWatcherAccounts:', this.props.activeWatcherAccounts);
     const watcherIds = this.props.activeUserData.reduce((accum, d) => !accum.includes(d['Watcher ID']) ? [...accum, d['Watcher ID']] : accum, []);
     const familyCodes = this.props.activeUserData.reduce((accum, d) => !accum.includes(d['Family Code']) ? [...accum, d['Family Code']] : accum, []);
     const watcherInfo = [{
@@ -36,17 +35,10 @@ class WatcherSearch extends Component {
       title: 'Watcher IDs',
       info: watcherIds,
     }];
-    console.log('watcherInfo:', watcherInfo);
+    // console.log('watcherInfo:', watcherInfo);
     this.setState({ watcherIds, familyCodes, watcherInfo });
   }
 
-  // Teach Autosuggest how to calculate suggestions for any given input value.
-  // getSuggestions = (value) => {
-  //   const inputValue = value.trim().toLowerCase();
-  //   const inputLength = inputValue.length;
-  //   if (inputLength === 0) return [];
-  //   return this.state.watcherInfo.filter(id => id.toString().toLowerCase().slice(0, inputLength) === inputValue);
-  // };
   getSuggestions = (value) => {
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
@@ -59,7 +51,7 @@ class WatcherSearch extends Component {
         };
       })
       .filter(section => section.info.length > 0);
-    console.log('suggestions:', suggestions);
+    // console.log('suggestions:', suggestions);
     return suggestions;
   }
 
@@ -67,7 +59,7 @@ class WatcherSearch extends Component {
 
   handleAccountChange = (e) => {
     if (e) e.preventDefault();
-    console.log('handleAccountChange', this.state.value);
+    // console.log('handleAccountChange', this.state.value);
     this.submitted = true;
     if (this.state.watcherIds.findIndex(element => element.toString() === this.state.value) !== -1) {
       document.getElementById('chart-container').innerHTML = '';
