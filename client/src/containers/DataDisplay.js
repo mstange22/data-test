@@ -34,7 +34,7 @@ class DataDisplay extends Component {
     if (displayMode === 'emotion') return (
       <EmotionData setDisplayString={displayString => this.setState({ displayString })} />
     );
-    if (displayMode === 'mediaUploads') return (
+    if (displayMode === 'media') return (
       <MediaUploadsData setDisplayString={displayString => this.setState({ displayString })} />
     );
     if (displayMode === 'sms') return (
