@@ -67,7 +67,7 @@ h3.rx-header-title {
 
 .date-picker-container {
   margin: 0 auto;
-  margin-top: 20px;
+  margin-top: 15px;
   padding: 10px;
   display: flex;
   justify-content: center;
@@ -224,6 +224,11 @@ h3.rx-header-title {
 }
 
 .data-container {
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.data-dashboard {
   margin-top: 15px;
   font-size: 16px;
 }
