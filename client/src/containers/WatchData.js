@@ -48,7 +48,7 @@ class WatchData extends Component {
         d['Family Code'] = activeWatcherAccounts[idx].read_write_share_code;
       }
     });
-    console.log('watch data (after adding Family Codes):', watchData);
+    console.log('watch data after adding family codes:', watchData);
     this.setState({ watchData, hasAddedFamilyCodes: true });
   }
 
@@ -173,7 +173,6 @@ class WatchData extends Component {
     return (
       <DataDashboard
         data={activeUserWatchData}
-        // activeUserData={this.state.activeWatcherAccounts}
         checkboxes={[{
           label: 'Minutes Watched',
           name: 'minutesWatched',
