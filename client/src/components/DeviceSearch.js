@@ -23,7 +23,6 @@ class DeviceSearch extends Component {
     if (this.submitted) {
       this.handleDeviceChange();
     }
-    console.log('this.props.value:', this.props.value);
     if (this.props.value !== this.state.value) {
       this.setState({ value: this.props.value });
     }
