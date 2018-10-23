@@ -19,9 +19,12 @@ class WatcherSearch extends Component {
     this.getWatcherInfo();
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate() {
     if (this.submitted) {
       this.handleWatcherChange();
+    }
+    if (this.props.value !== this.state.value) {
+      this.setState({ value: this.props.value });
     }
   }
 
@@ -35,7 +38,6 @@ class WatcherSearch extends Component {
       title: 'Watcher IDs',
       info: watcherIds,
     }];
-    // console.log('watcherInfo:', watcherInfo);
     this.setState({ watcherIds, familyCodes, watcherInfo });
   }
 
@@ -47,7 +49,7 @@ class WatcherSearch extends Component {
       .map(section => {
         return {
           title: section.title,
-          info: section.info.filter(id => id.toString().toLowerCase().slice(0, inputLength) === inputValue)
+          info: section.info.filter(id => id && id.toString().toLowerCase().slice(0, inputLength) === inputValue)
         };
       })
       .filter(section => section.info.length > 0);
@@ -59,7 +61,6 @@ class WatcherSearch extends Component {
 
   handleWatcherChange = (e) => {
     if (e) e.preventDefault();
-    // console.log('handleAccountChange', this.state.value);
     this.submitted = true;
     if (this.state.watcherIds.findIndex(element => element.toString() === this.state.value) !== -1) {
       document.getElementById('chart-container').innerHTML = '';
@@ -73,9 +74,11 @@ class WatcherSearch extends Component {
   }
 
   onChange = (event, { newValue, method }) => {
+    console.log('onChange:', newValue);
     this.setState({
       value: newValue
     });
+    this.props.setSearchValue(newValue);
   };
 
   onSuggestionsFetchRequested = ({ value }) => {
@@ -112,7 +115,7 @@ class WatcherSearch extends Component {
     const inputProps = {
       placeholder: 'Enter a Family Code or Watcher ID',
       value,
-      onChange: this.onChange
+      onChange: this.onChange,
     }
     return (
       <div className="watcher-search-container">
@@ -137,6 +140,8 @@ WatcherSearch.propTypes = {
   onWatcherSelected: PropTypes.func.isRequired,
   activeUserData: PropTypes.array.isRequired,
   activeWatcherAccounts: PropTypes.array.isRequired,
+  value: PropTypes.string.isRequired,
+  setSearchValue: PropTypes.func.isRequired,
 }
 
 export default WatcherSearch;

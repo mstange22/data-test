@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'react-bootstrap';
 import moment from 'moment';
-import DateRangePicker from '../components/DateRangePicker';
-import DeviceSearch from '../components/DeviceSearch';
-import WatcherSearch from '../components/WatcherSearch';
+import DateRangePicker from './DateRangePicker';
+import Search from './Search';
 
 class DataDashboard extends Component {
   constructor(props) {
@@ -12,45 +10,6 @@ class DataDashboard extends Component {
     this.state = {
 
     };
-  }
-
-  renderSearch = () => {
-    const { data, activeUserData, onSearchTargetSelected } = this.props;
-    let search;
-    switch (this.props.searchType) {
-      case 'device':
-        search = (
-          <DeviceSearch
-            deviceData={data}
-            onDeviceSelected={onSearchTargetSelected}
-          />
-        );
-        break;
-      case 'emotion':
-        search = (
-          <WatcherSearch
-            activeUserData={data}
-            activeWatcherAccounts={activeUserData}
-            onWatcherSelected={onSearchTargetSelected}
-          />
-        );
-        break;
-      default:
-        break;
-    }
-    return (
-      <div className="search-container">
-        {search}
-        <Button
-          id="clear-filter-btn"
-          bsStyle="default"
-          disabled={this.props.clearFilterButtonDisabled}
-          onClick={this.props.clearFilterButtonOnClick}
-        >
-          Clear Filter
-        </Button>
-      </div>
-    );
   }
 
   render() {
@@ -69,7 +28,14 @@ class DataDashboard extends Component {
               {checkbox.label}
             </label>
           ))}
-          {this.renderSearch()}
+          <Search
+            data={this.props.data}
+            activeUserData={this.props.activeUserData}
+            searchType={this.props.searchType}
+            onSearchTargetSelected={this.props.onSearchTargetSelected}
+            clearFilterButtonDisabled={this.props.clearFilterButtonDisabled}
+            clearFilterButtonOnClick={this.props.clearFilterButtonOnClick}
+          />
         </div>
         <DateRangePicker
           onDateRangePicked={this.props.onDateRangePicked}
