@@ -37,7 +37,6 @@ class DeviceData extends Component {
     API.getDeviceData()
       .then(res => {
         this.props.setDisplayString('Device Data');
-        console.log('deviceData res:', res.data);
         this.setState({
           deviceData: res.data
             .slice()
