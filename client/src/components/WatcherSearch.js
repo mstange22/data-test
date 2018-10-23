@@ -74,7 +74,6 @@ class WatcherSearch extends Component {
   }
 
   onChange = (event, { newValue, method }) => {
-    console.log('onChange:', newValue);
     this.setState({
       value: newValue
     });
@@ -139,7 +138,6 @@ class WatcherSearch extends Component {
 WatcherSearch.propTypes = {
   onWatcherSelected: PropTypes.func.isRequired,
   activeUserData: PropTypes.array.isRequired,
-  activeWatcherAccounts: PropTypes.array.isRequired,
   value: PropTypes.string.isRequired,
   setSearchValue: PropTypes.func.isRequired,
 }

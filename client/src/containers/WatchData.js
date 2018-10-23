@@ -99,7 +99,6 @@ class WatchData extends Component {
     } else {
       filteredWatchData = watchData.filter(d => this.state.activeFamilyCodes.includes(d['Family Code']));
     }
-    // console.log('filtered watch data:', filteredWatchData);
     if (filteredWatchData.length < 1) return null;
     // check for watcher ID filter
     if (renderMode === 'watcherId' && this.state.currentWatcherId !== 0) {
@@ -173,8 +172,8 @@ class WatchData extends Component {
     if (activeUserWatchData.length < 1 || !this.state.hasAddedFamilyCodes) return null;
     return (
       <DataDashboard
-        data={watchData}
-        activeUserData={this.state.activeWatcherAccounts}
+        data={activeUserWatchData}
+        // activeUserData={this.state.activeWatcherAccounts}
         checkboxes={[{
           label: 'Minutes Watched',
           name: 'minutesWatched',

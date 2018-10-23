@@ -30,7 +30,6 @@ class DataDashboard extends Component {
           ))}
           <Search
             data={this.props.data}
-            activeUserData={this.props.activeUserData}
             searchType={this.props.searchType}
             onSearchTargetSelected={this.props.onSearchTargetSelected}
             clearFilterButtonDisabled={this.props.clearFilterButtonDisabled}
@@ -49,7 +48,6 @@ class DataDashboard extends Component {
 
 DataDashboard.propTypes = {
   data: PropTypes.array.isRequired,
-  activeUserData: PropTypes.array,
   checkboxes: PropTypes.array.isRequired,
   searchType: PropTypes.string,
   onDateRangePicked: PropTypes.func.isRequired,

@@ -175,7 +175,6 @@ class EmotionData extends Component {
     return (
       <DataDashboard
         data={activeUserEmotionData}
-        activeUserData={this.state.activeWatcherAccounts}
         checkboxes={[{
           label: 'Smile Count',
           name: 'smileCount',
