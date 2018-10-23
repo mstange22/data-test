@@ -48,7 +48,7 @@ class EmotionData extends Component {
         d['Family Code'] = activeWatcherAccounts[idx].read_write_share_code;
       }
     });
-    console.log('emotion data (after adding Family Codes):', emotionData);
+    console.log('emotion data after adding family codes:', emotionData);
     this.setState({ emotionData, hasAddedFamilyCodes: true });
   }
 
