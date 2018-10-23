@@ -9,7 +9,7 @@ import Notification from '../components/Notification';
 import Spinner from '../components/Spinner';
 
 const env = muze();
-const CHART_CONTAINER_HEIGHT = 480;
+const CHART_CONTAINER_HEIGHT = window.innerHeight - 580;
 const CHART_CONTAINER_WIDTH = window.innerWidth - 280;
 
 class DeviceData extends Component {
@@ -176,7 +176,7 @@ class DeviceData extends Component {
 
   render() {
     return (
-      <div className="data-dashboard">
+      <div className="data-container">
         <div id="chart-container">
           {this.renderSpinner()}
           {this.renderDeviceData()}

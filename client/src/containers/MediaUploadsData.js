@@ -5,7 +5,7 @@ import muze, { DataModel } from 'muze';
 import Spinner from '../components/Spinner';
 
 const env = muze();
-const CHART_CONTAINER_HEIGHT = 480;
+const CHART_CONTAINER_HEIGHT = window.innerHeight - 580;
 const CHART_CONTAINER_WIDTH = window.innerWidth - 280;
 
 class MediaUploadsData extends Component {
@@ -52,6 +52,7 @@ class MediaUploadsData extends Component {
               Uploads: '100+', 'Number of Users': 0,
             },
           ]);
+          console.log('mediaUploads:', mediaUploads);
           this.setState({
             mediaUploads,
             loadingData: false,
@@ -78,8 +79,8 @@ class MediaUploadsData extends Component {
     const canvas = env.canvas();
     canvas
       .data(dm)
-      .width(window.innerWidth - 280)
-      .height(480)
+      .width(CHART_CONTAINER_WIDTH)
+      .height(CHART_CONTAINER_HEIGHT)
       .rows(['Number of Users'])
       .columns(['Uploads'])
       // .color('watcher_id')
@@ -96,9 +97,11 @@ class MediaUploadsData extends Component {
 
   render() {
     return (
-      <div id="chart-container">
-        {this.renderSpinner()}
-        {this.renderMediaUploadsData()}
+      <div className="data-container">
+        <div id="chart-container">
+          {this.renderSpinner()}
+          {this.renderMediaUploadsData()}
+        </div>
       </div>
     );
   }

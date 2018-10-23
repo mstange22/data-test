@@ -8,7 +8,7 @@ import Notification from '../components/Notification';
 import Spinner from '../components/Spinner';
 
 const env = muze();
-const CHART_CONTAINER_HEIGHT = 480;
+const CHART_CONTAINER_HEIGHT = window.innerHeight - 580;
 const CHART_CONTAINER_WIDTH = window.innerWidth - 280;
 
 class EmotionData extends Component {
@@ -48,7 +48,7 @@ class EmotionData extends Component {
         d['Family Code'] = activeWatcherAccounts[idx].read_write_share_code;
       }
     });
-    // console.log('emotion data:', emotionData);
+    console.log('emotion data (after adding Family Codes):', emotionData);
     this.setState({ emotionData, hasAddedFamilyCodes: true });
   }
 
@@ -74,7 +74,7 @@ class EmotionData extends Component {
       .catch(err => console.log(err.message));
     API.getActiveWatcherAccounts()
     .then(res => {
-      console.log('active customer accounts:', res.data);
+      console.log('active customer accounts res:', res.data);
       this.setState({
         activeWatcherAccounts: res.data,
         activeWatcherIds: res.data.reduce((acc, d) => [...acc, d.patient_account_id], []),
@@ -142,8 +142,8 @@ class EmotionData extends Component {
     const canvas = env.canvas();
     canvas
       .data(dm)
-      .width(window.innerWidth - 300)
-      .height(window.innerHeight - 580)
+      .width(CHART_CONTAINER_WIDTH)
+      .height(CHART_CONTAINER_HEIGHT)
       .rows(['Total Smiles'])
       .columns(['Date'])
       .color(renderMode === 'watcherId' ? 'Watcher ID' : 'Family Code')
@@ -214,9 +214,8 @@ class EmotionData extends Component {
   }
 
   render() {
-    console.log('currentFamilyCode:', this.state.currentFamilyCode);
     return (
-      <div className="emotion-dashboard">
+      <div className="data-container">
         <div id="chart-container">
           {this.renderSpinner()}
           {this.renderEmotionData()}

@@ -8,7 +8,7 @@ import Spinner from '../components/Spinner';
 import DataDashboard from '../components/DataDashboard';
 
 const env = muze();
-const CHART_CONTAINER_HEIGHT = 480;
+const CHART_CONTAINER_HEIGHT = window.innerHeight - 580;
 const CHART_CONTAINER_WIDTH = window.innerWidth - 280;
 
 class WatchData extends Component {
@@ -48,16 +48,16 @@ class WatchData extends Component {
         d['Family Code'] = activeWatcherAccounts[idx].read_write_share_code;
       }
     });
-    // console.log('watch data:', watchData);
+    console.log('watch data (after adding Family Codes):', watchData);
     this.setState({ watchData, hasAddedFamilyCodes: true });
   }
 
   getWatchData = () => {
     document.getElementById('chart-container').innerHTML = '';
+    this.props.setDisplayString('Minutes Watched by Day (Active Accounts)');
     this.setState({ watchData: [], loadingData: true });
     API.getWatchData()
       .then(res => {
-        this.props.setDisplayString('Minutes Watched by Day (Active Accounts)');
         this.setState({
           watchData: res.data
             .slice()
@@ -74,7 +74,7 @@ class WatchData extends Component {
       .catch(err => console.log(err.message));
     API.getActiveWatcherAccounts()
       .then(res => {
-        // console.log('active customer accounts:', res.data);
+        console.log('active watcher accounts res:', res.data);
         this.setState({
           activeWatcherAccounts: res.data,
           activeWatcherIds: res.data.reduce((acc, d) => [...acc, d.patient_account_id], []),
@@ -135,8 +135,8 @@ class WatchData extends Component {
     const canvas = env.canvas();
     canvas
       .data(dm)
-      .width(window.innerWidth - 280)
-      .height(480)
+      .width(CHART_CONTAINER_WIDTH)
+      .height(CHART_CONTAINER_HEIGHT)
       .rows(['Total Watch Minutes'])
       .columns(['Date'])
       .color(renderMode === 'watcherId' ? 'Watcher ID' : 'Family Code')
@@ -214,7 +214,7 @@ class WatchData extends Component {
 
   render() {
     return (
-      <div className="emotion-dashboard">
+      <div className="data-container">
         <div id="chart-container">
           {this.renderSpinner()}
           {this.renderWatchData()}

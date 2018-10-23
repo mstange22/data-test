@@ -10,7 +10,7 @@ import Spinner from '../components/Spinner';
 import { setState } from '../redux/actions';
 
 const env = muze();
-const CHART_CONTAINER_HEIGHT = 480;
+const CHART_CONTAINER_HEIGHT = window.innerHeight - 580;
 const CHART_CONTAINER_WIDTH = window.innerWidth - 280;
 
 class SmsData extends Component {
@@ -186,7 +186,7 @@ class SmsData extends Component {
 
   render() {
     return (
-      <div className="data-dashboard">
+      <div className="data-container">
         <div id="chart-container">
           {this.renderSpinner()}
           {this.renderSmsData()}
