@@ -50,6 +50,8 @@ class DeviceData extends Component {
               return d;
             }),
             loadingData: false,
+        }, () => {
+          console.log('sorted deviceData:', this.state.deviceData);
         });
       })
       .catch(err => console.log(err.message));
@@ -109,10 +111,19 @@ class DeviceData extends Component {
       .data(dm)
       .width(CHART_CONTAINER_WIDTH)
       .height(CHART_CONTAINER_HEIGHT)
+      // .layers([{
+      //   mark: 'arc',
+      //     encoding: {
+      //       angle: 'Device Pings',
+      //     },
+      // }])
+      // .rows([])
+      // .columns([])
       .rows(['Device Pings'])
       .columns(['Date'])
       .color(renderMode === 'familyCode' ? 'Family Code' : 'Device ID')
       .mount('#chart-container')
+      // .size('batt')
     ;
   }
 
