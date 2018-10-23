@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'react-bootstrap';
 import moment from 'moment';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
-import DateRangePicker from '../components/DateRangePicker';
-import WatcherSearch from '../components/WatcherSearch';
+import DataDashboard from '../components/DataDashboard';
 import Notification from '../components/Notification';
 import Spinner from '../components/Spinner';
 
@@ -159,7 +157,7 @@ class EmotionData extends Component {
     this.setState({ selectedOption: name });
   }
 
-  handleWatcherSelected = (watcher, renderMode) => {
+  onWatcherSelected = (watcher, renderMode) => {
     if (renderMode === 'watcherId') {
       this.setState({ currentWatcherId: watcher, currentFamilyCode: '', renderMode });
     } else {
@@ -169,47 +167,31 @@ class EmotionData extends Component {
 
   renderDashboard = () => {
     const { emotionData } = this.state;
-    if (this.state.emotionData.length < 1) return null;
+    if (this.state.emotionData.length < 1 || !this.state.hasAddedFamilyCodes) return null;
     const activeUserEmotionData = emotionData
       .slice()
       .filter(d => this.state.activeWatcherIds.includes(d.watcher_id));
     if (activeUserEmotionData.length < 1) return null;
     return (
-      <div className="data-dashboard">
-        <div className="form-input-container">
-          <label className="checkbox-label">
-            <input
-              name="smileCount"
-              type="checkbox"
-              checked={this.state.selectedOption === 'smileCount'}
-              onChange={this.handleInputChange}
-            />
-            {'Smile Count'}
-          </label>
-          {this.state.hasAddedFamilyCodes && (
-            <div className="search-container">
-              <WatcherSearch
-                activeUserData={activeUserEmotionData}
-                activeWatcherAccounts={this.state.activeWatcherAccounts}
-                onWatcherSelected={this.handleWatcherSelected}
-              />
-              <Button
-                id="clear-filter-btn"
-                bsStyle="default"
-                disabled={this.state.currentFamilyCode === '' && this.state.currentWatcherId === 0}
-                onClick={() => this.setState({ currentFamilyCode: '', currentWatcherId: 0})}
-              >
-                Clear Filter
-              </Button>
-            </div>
-          )}
-        </div>
-        <DateRangePicker
-          onDateRangePicked={(range) => this.renderEmotionData(range)}
-          minDate={moment(activeUserEmotionData[0].Date, 'M/DD/YY')}
-          maxDate={moment(activeUserEmotionData[activeUserEmotionData.length - 1].Date, 'M/DD/YY')}
-        />
-      </div>
+      <DataDashboard
+        data={activeUserEmotionData}
+        activeUserData={this.state.activeWatcherAccounts}
+        checkboxes={[{
+          label: 'Smile Count',
+          name: 'smileCount',
+          checked: this.state.selectedOption === 'smileCount',
+          onChange: (e) => {
+            e.preventDefault();
+            const { name } = e.target;
+            this.setState({ selectedOption: name });
+          },
+        }]}
+        searchType="emotion"
+        onSearchTargetSelected={this.onWatcherSelected}
+        onDateRangePicked={range => this.renderEmotionData(range)}
+        clearFilterButtonDisabled={this.state.currentFamilyCode === '' && this.state.currentWatcherId === 0}
+        clearFilterButtonOnClick={() => this.setState({ currentFamilyCode: '', currentWatcherId: 0})}
+      />
     );
   }
 
@@ -233,6 +215,7 @@ class EmotionData extends Component {
   }
 
   render() {
+    console.log('currentFamilyCode:', this.state.currentFamilyCode);
     return (
       <div className="emotion-dashboard">
         <div id="chart-container">

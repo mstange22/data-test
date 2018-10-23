@@ -149,8 +149,8 @@ class DeviceData extends Component {
         searchType="device"
         onSearchTargetSelected={this.onDeviceSelected}
         onDateRangePicked={range => this.renderDeviceData(range)}
-        clearFilterButtonDisabled={this.state.currentFamilyCode === '' && this.state.currentWatcherId === 0}
-        clearFilterButtonOnClick={() => this.setState({ currentFamilyCode: '', currentWatcherId: 0})}
+        clearFilterButtonDisabled={this.state.currentFamilyCode === '' && this.state.currentDeviceId === 0}
+        clearFilterButtonOnClick={() => this.setState({ currentFamilyCode: '', currentDeviceId: 0})}
       />
     );
   }

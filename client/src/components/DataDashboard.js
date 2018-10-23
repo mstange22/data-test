@@ -4,6 +4,7 @@ import { Button } from 'react-bootstrap';
 import moment from 'moment';
 import DateRangePicker from '../components/DateRangePicker';
 import DeviceSearch from '../components/DeviceSearch';
+import WatcherSearch from '../components/WatcherSearch';
 
 class DataDashboard extends Component {
   constructor(props) {
@@ -14,14 +15,23 @@ class DataDashboard extends Component {
   }
 
   renderSearch = () => {
-    const { data } = this.props;
+    const { data, activeUserData, onSearchTargetSelected } = this.props;
     let search;
     switch (this.props.searchType) {
       case 'device':
         search = (
           <DeviceSearch
             deviceData={data}
-            onDeviceSelected={this.props.onSearchTargetSelected}
+            onDeviceSelected={onSearchTargetSelected}
+          />
+        );
+        break;
+      case 'emotion':
+        search = (
+          <WatcherSearch
+            activeUserData={data}
+            activeWatcherAccounts={activeUserData}
+            onWatcherSelected={onSearchTargetSelected}
           />
         );
         break;
@@ -34,8 +44,8 @@ class DataDashboard extends Component {
         <Button
           id="clear-filter-btn"
           bsStyle="default"
-          disabled={this.state.currentFamilyCode === '' && this.state.currentWatcherId === 0}
-          onClick={() => this.setState({ currentFamilyCode: '', currentWatcherId: 0})}
+          disabled={this.props.clearFilterButtonDisabled}
+          onClick={this.props.clearFilterButtonOnClick}
         >
           Clear Filter
         </Button>
@@ -73,6 +83,7 @@ class DataDashboard extends Component {
 
 DataDashboard.propTypes = {
   data: PropTypes.array.isRequired,
+  activeUserData: PropTypes.array,
   checkboxes: PropTypes.array.isRequired,
   searchType: PropTypes.string,
   onDateRangePicked: PropTypes.func.isRequired,
