@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import DeviceSearch from './DeviceSearch';
 import WatcherSearch from './WatcherSearch';
+import AccountIdSearch from './AccountIdSearch';
 
 class Search extends Component {
   constructor(props) {
@@ -19,7 +20,7 @@ class Search extends Component {
   }
 
   render() {
-    const { data, activeUserData, onSearchTargetSelected } = this.props;
+    const { data, onSearchTargetSelected } = this.props;
     let search;
     switch (this.props.searchType) {
       case 'device':
@@ -36,13 +37,22 @@ class Search extends Component {
         search = (
           <WatcherSearch
             activeUserData={data}
-            activeWatcherAccounts={activeUserData}
             onWatcherSelected={onSearchTargetSelected}
             setSearchValue={(value) => this.setState({ value })}
             value={this.state.value}
           />
         );
         break;
+      case 'account':
+          search = (
+            <AccountIdSearch
+              activeUserData={data}
+              onAccountIdSelected={onSearchTargetSelected}
+              setSearchValue={(value) => this.setState({ value })}
+              value={this.state.value}
+            />
+          );
+          break;
       default:
         break;
     }
@@ -64,7 +74,6 @@ class Search extends Component {
 
 Search.PropTypes = {
   data: PropTypes.array.isRequired,
-  activeUserData: PropTypes.array,
   onSearchTargetSelected: PropTypes.func.isRequired,
   clearFilterButtonDisabled: PropTypes.func.isRequired,
   clearFilterButtonOnClick: PropTypes.func.isRequired,

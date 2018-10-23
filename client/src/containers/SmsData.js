@@ -4,9 +4,8 @@ import { connect } from 'react-redux';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
 import moment from 'moment';
-import DateRangePicker from '../components/DateRangePicker';
+import DataDashboard from '../components/DataDashboard';
 import Notification from '../components/Notification';
-import AccountIdSearch from '../components/AccountIdSearch';
 import Spinner from '../components/Spinner';
 import { setState } from '../redux/actions';
 
@@ -32,13 +31,6 @@ class SmsData extends Component {
 
   componentDidMount() {
     this.getSmsData();
-    this.props.setState({ greeting: 'now in SMS Data'});
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.state !== prevProps.state) {
-      console.log('newState:', this.props.state);
-    }
   }
 
   getSmsData = () => {
@@ -65,7 +57,7 @@ class SmsData extends Component {
       .catch(err => console.log(err.message));
     API.getActiveSmsAccounts()
     .then(res => {
-      console.log('active sms accounts:', res.data);
+      console.log('active sms accounts res:', res.data);
       this.setState({
         activeSmsAccounts: res.data,
         activeSmsAccountIds: res.data.reduce((acc, d) => [...acc, d.account_id], []),
@@ -152,29 +144,24 @@ class SmsData extends Component {
       .filter(d => this.state.activeSmsAccountIds.includes(d['Account ID']));
     if (activeUserSmsData.length < 1) return null;
     return (
-      <div className="data-dashboard">
-        <div className="form-input-container">
-          <label className="checkbox-label">
-            <input
-              name="smsCount"
-              type="checkbox"
-              checked={this.state.selectedOption === 'smsCount'}
-              onChange={this.handleInputChange}
-            />
-            {'SMS Count'}
-          </label>
-          <AccountIdSearch
-            activeUserData={activeUserSmsData}
-            activeAccountIds={this.state.activeSmsAccountIds}
-            onAccountIdSelected={(currentAccountId) => this.setState({ currentAccountId })}
-          />
-        </div>
-        <DateRangePicker
-          onDateRangePicked={(range) => this.renderSmsData(range)}
-          minDate={moment(activeUserSmsData[0].Date, 'M/DD/YY')}
-          maxDate={moment(activeUserSmsData[activeUserSmsData.length - 1].Date, 'M/DD/YY')}
-        />
-      </div>
+      <DataDashboard
+        data={activeUserSmsData}
+        checkboxes={[{
+          label: 'SMS Count',
+          name: 'smsCount',
+          checked: this.state.selectedOption === 'smsCount',
+          onChange: (e) => {
+            e.preventDefault();
+            const { name } = e.target;
+            this.setState({ selectedOption: name });
+          },
+        }]}
+        searchType="account"
+        onSearchTargetSelected={(currentAccountId) => this.setState({ currentAccountId })}
+        onDateRangePicked={range => this.renderSmsData(range)}
+        clearFilterButtonDisabled={this.state.currentAccountId === 0}
+        clearFilterButtonOnClick={() => this.setState({ currentAccountId: 0})}
+      />
     );
   }
 

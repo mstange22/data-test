@@ -21,11 +21,13 @@ class AccountIdSearch extends Component {
     if (this.submitted) {
       this.handleAccountChange();
     }
+    if (this.props.value !== this.state.value) {
+      this.setState({ value: this.props.value });
+    }
   }
 
   getAccountIds = () => {
     const accountIds = this.props.activeUserData.reduce((accum, d) => !accum.includes(d['Account ID']) ? [...accum, d['Account ID']] : accum, []);
-    // console.log('accountIds:', accountIds);
     this.setState({ accountIds });
   }
 
@@ -44,7 +46,6 @@ class AccountIdSearch extends Component {
 
   handleAccountChange = (e) => {
     if (e) e.preventDefault();
-    console.log('handleAccountChange', this.state.value);
     this.submitted = true;
     if (this.state.accountIds.findIndex(element => element.toString() === this.state.value) !== -1) {
       document.getElementById('chart-container').innerHTML = '';
@@ -57,6 +58,7 @@ class AccountIdSearch extends Component {
     this.setState({
       value: newValue
     });
+    this.props.setSearchValue(newValue);
   };
 
   onSuggestionsFetchRequested = ({ value }) => {
@@ -98,14 +100,11 @@ class AccountIdSearch extends Component {
     return (
       <div className="watcher-search-container">
         <Autosuggest
-          // multiSection={true}
           suggestions={suggestions}
           onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
           onSuggestionsClearRequested={this.onSuggestionsClearRequested}
           getSuggestionValue={this.getSuggestionValue}
           renderSuggestion={this.renderSuggestion}
-          // renderSectionTitle={this.renderSectionTitle}
-          // getSectionSuggestions={this.getSectionSuggestions}
           inputProps={inputProps}
           onSuggestionSelected={this.handleAccountChange}
         />
@@ -117,7 +116,6 @@ class AccountIdSearch extends Component {
 AccountIdSearch.propTypes = {
   onAccountIdSelected: PropTypes.func.isRequired,
   activeUserData: PropTypes.array.isRequired,
-  activeAccountIds: PropTypes.array.isRequired,
 }
 
 export default AccountIdSearch;
