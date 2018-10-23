@@ -3,10 +3,9 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
-import DateRangePicker from '../components/DateRangePicker';
 import Notification from '../components/Notification';
-import WatcherSearch from '../components/WatcherSearch';
 import Spinner from '../components/Spinner';
+import DataDashboard from '../components/DataDashboard';
 
 const env = muze();
 const CHART_CONTAINER_HEIGHT = 480;
@@ -151,7 +150,7 @@ class WatchData extends Component {
     this.setState({ displayError: false });
   }
 
-  handleWatcherSelected = (watcher, renderMode) => {
+  onWatcherSelected = (watcher, renderMode) => {
     if (renderMode === 'watcherId') {
       this.setState({ currentWatcherId: watcher, renderMode });
     } else {
@@ -171,33 +170,27 @@ class WatchData extends Component {
     const activeUserWatchData = watchData
       .slice()
       .filter(d => this.state.activeWatcherIds.includes(d.watcher_id));
-    if (activeUserWatchData.length < 1) return null;
+    if (activeUserWatchData.length < 1 || !this.state.hasAddedFamilyCodes) return null;
     return (
-      <div className="data-dashboard">
-        <div className="form-input-container">
-          <label className="checkbox-label">
-            <input
-              name="minutesWatched"
-              type="checkbox"
-              checked={this.state.selectedOption === 'minutesWatched'}
-              onChange={this.handleInputChange}
-            />
-            {'Minutes Watched'}
-          </label>
-          {this.state.hasAddedFamilyCodes && (
-            <WatcherSearch
-              activeUserData={activeUserWatchData}
-              activeWatcherAccounts={this.state.activeWatcherAccounts}
-              onWatcherSelected={this.handleWatcherSelected}
-            />
-          )}
-        </div>
-        <DateRangePicker
-          onDateRangePicked={(range) => this.renderWatchData(range)}
-          minDate={moment(activeUserWatchData[0].Date, 'M/DD/YY')}
-          maxDate={moment(activeUserWatchData[activeUserWatchData.length - 1].Date, 'M/DD/YY')}
-        />
-      </div>
+      <DataDashboard
+        data={watchData}
+        activeUserData={this.state.activeWatcherAccounts}
+        checkboxes={[{
+          label: 'Minutes Watched',
+          name: 'minutesWatched',
+          checked: this.state.selectedOption === 'minutesWatched',
+          onChange: (e) => {
+            e.preventDefault();
+            const { name } = e.target;
+            this.setState({ selectedOption: name });
+          },
+        }]}
+        searchType="watcher"
+        onSearchTargetSelected={this.onWatcherSelected}
+        onDateRangePicked={range => this.renderWatchData(range)}
+        clearFilterButtonDisabled={this.state.currentFamilyCode === '' && this.state.currentWatcherId === 0}
+        clearFilterButtonOnClick={() => this.setState({ currentFamilyCode: '', currentWatcherId: 0})}
+      />
     );
   }
 

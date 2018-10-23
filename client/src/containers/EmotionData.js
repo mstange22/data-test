@@ -186,7 +186,7 @@ class EmotionData extends Component {
             this.setState({ selectedOption: name });
           },
         }]}
-        searchType="emotion"
+        searchType="watcher"
         onSearchTargetSelected={this.onWatcherSelected}
         onDateRangePicked={range => this.renderEmotionData(range)}
         clearFilterButtonDisabled={this.state.currentFamilyCode === '' && this.state.currentWatcherId === 0}
