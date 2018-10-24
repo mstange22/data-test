@@ -58,10 +58,10 @@ class MusicData extends Component {
 
   getMusicData = () => {
     document.getElementById('chart-container').innerHTML = '';
+    this.props.setDisplayString('Music Data');
     this.setState({ musicData: [], loadingData: true });
     API.getMusicData()
       .then(res => {
-        this.props.setDisplayString('Music Data');
         console.log('music res:', res.data);
         this.setState({
           musicData: res.data

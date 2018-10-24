@@ -33,10 +33,10 @@ class DeviceData extends Component {
 
   getDeviceData = () => {
     document.getElementById('chart-container').innerHTML = '';
+    this.props.setDisplayString('Device Data');
     this.setState({ deviceData: [], loadingData: true });
     API.getDeviceData()
       .then(res => {
-        this.props.setDisplayString('Device Data');
         this.setState({
           deviceData: res.data
             .slice()
