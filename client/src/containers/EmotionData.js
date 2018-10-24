@@ -210,7 +210,7 @@ class EmotionData extends Component {
         errorMessage={this.state.errorMessage}
         onCloseNotification={() => this.setState({ displayError: false })}
       />
-    )
+    );
   }
 
   render() {
