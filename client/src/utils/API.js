@@ -9,4 +9,5 @@ export default {
   getEmotionData: () => axios.get('/emotion'),
   getSmsData: () => axios.get('/sms'),
   getDeviceData: () => axios.get('device'),
+  getMusicData: () => axios.get('music'),
 };

@@ -57,6 +57,16 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
     })
   });
 
+  app.get('/music', (req, res) => {
+    const queryString = 'SELECT * FROM music';
+    watchStatsConnection.query(queryString, (err, data) => {
+      if (err) throw(err);
+      else {
+        res.json(data);
+      }
+    })
+  });
+
   app.get('/media/uploads', (req, res) => {
     const queryString = (
       'SELECT \
