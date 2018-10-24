@@ -142,7 +142,7 @@ class DeviceData extends Component {
 
   renderDashboard = () => {
     const { deviceData } = this.state;
-    if (deviceData.length < 1 || this.state.displayError) return null;
+    if (deviceData.length < 1) return null;
     return (
       <DataDashboard
         data={deviceData}
