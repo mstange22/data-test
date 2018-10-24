@@ -61,6 +61,6 @@ class DataDisplay extends Component {
 
 DataDisplay.propTypes = {
   displayMode: PropTypes.string.isRequired,
-}
+};
 
 export default DataDisplay;

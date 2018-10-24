@@ -50,7 +50,7 @@ class DeviceSearch extends Component {
       .map(section => {
         return {
           title: section.title,
-          info: section.info.filter(id => id.toString().toLowerCase().slice(0, inputLength) === inputValue)
+          info: section.info.filter(id => id.toString().toLowerCase().slice(0, inputLength) === inputValue),
         };
       })
       .filter(section => section.info.length > 0);
@@ -75,22 +75,16 @@ class DeviceSearch extends Component {
   }
 
   onChange = (event, { newValue, method }) => {
-    this.setState({
-      value: newValue
-    });
+    this.setState({ value: newValue });
     this.props.setSearchValue(newValue);
   };
 
   onSuggestionsFetchRequested = ({ value }) => {
-    this.setState({
-      suggestions: this.getSuggestions(value),
-    });
+    this.setState({ suggestions: this.getSuggestions(value) });
   };
 
   onSuggestionsClearRequested = () => {
-    this.setState({
-      suggestions: []
-    });
+    this.setState({ suggestions: [] });
   };
 
   renderSuggestion = suggestion => (
@@ -115,8 +109,8 @@ class DeviceSearch extends Component {
     const inputProps = {
       placeholder: 'Enter a Family Code or Device ID',
       value,
-      onChange: this.onChange
-    }
+      onChange: this.onChange,
+    };
     return (
       <div className="watcher-search-container">
         <Autosuggest
@@ -139,6 +133,6 @@ class DeviceSearch extends Component {
 DeviceSearch.propTypes = {
   onDeviceSelected: PropTypes.func.isRequired,
   deviceData: PropTypes.array.isRequired,
-}
+};
 
 export default DeviceSearch;

@@ -9,14 +9,14 @@ class Search extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: ''
-    }
+      value: '',
+    };
   }
 
   handleClearFilterButtonClick = (e) => {
     e.preventDefault();
     this.props.clearFilterButtonOnClick();
-    this.setState({ value: '' })
+    this.setState({ value: '' });
   }
 
   render() {
@@ -77,6 +77,6 @@ Search.PropTypes = {
   onSearchTargetSelected: PropTypes.func.isRequired,
   clearFilterButtonDisabled: PropTypes.func.isRequired,
   clearFilterButtonOnClick: PropTypes.func.isRequired,
-}
+};
 
 export default Search;

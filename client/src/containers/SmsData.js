@@ -181,7 +181,7 @@ class SmsData extends Component {
         errorMessage={this.state.errorMessage}
         onCloseNotification={() => this.setState({ displayError: false })}
       />
-    )
+    );
   }
 
   render() {
@@ -200,7 +200,7 @@ class SmsData extends Component {
 
 SmsData.propTypes = {
   setDisplayString: PropTypes.func.isRequired,
-}
+};
 
 const mapStateToProps = (state) => ({
   state,

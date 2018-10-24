@@ -208,7 +208,7 @@ class WatchData extends Component {
         errorMessage={this.state.errorMessage}
         onCloseNotification={() => this.setState({ displayError: false })}
       />
-    )
+    );
   }
 
   render() {
@@ -227,6 +227,6 @@ class WatchData extends Component {
 
 WatchData.propTypes = {
   setDisplayString: PropTypes.func.isRequired,
-}
+};
 
 export default WatchData;

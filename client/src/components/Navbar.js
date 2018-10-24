@@ -19,7 +19,7 @@ class Navbar extends Component {
           />
         </div>
       </div>
-    )
+    );
   }
 }
 

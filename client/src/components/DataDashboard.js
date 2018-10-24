@@ -42,7 +42,7 @@ class DataDashboard extends Component {
           maxDate={moment(data[data.length - 1].Date, 'M/DD/YY')}
         />
       </div>
-    )
+    );
   }
 }
 
@@ -54,6 +54,6 @@ DataDashboard.propTypes = {
   onSearchTargetSelected: PropTypes.func.isRequired,
   clearFilterButtonDisabled: PropTypes.bool.isRequired,
   clearFilterButtonOnClick: PropTypes.func.isRequired,
-}
+};
 
 export default DataDashboard;

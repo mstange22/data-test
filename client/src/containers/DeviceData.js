@@ -181,7 +181,7 @@ class DeviceData extends Component {
         errorMessage={this.state.errorMessage}
         onCloseNotification={() => this.setState({ displayError: false })}
       />
-    )
+    );
   }
 
   render() {
@@ -200,7 +200,7 @@ class DeviceData extends Component {
 
 DeviceData.propTypes = {
   setDisplayString: PropTypes.func.isRequired,
-}
+};
 
 const mapStateToProps = (state) => ({
   state,

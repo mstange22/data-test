@@ -246,7 +246,7 @@ class MusicData extends Component {
 
 MusicData.propTypes = {
   setDisplayString: PropTypes.func.isRequired,
-}
+};
 
 const mapStateToProps = (state) => ({
   state,

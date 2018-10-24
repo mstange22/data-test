@@ -109,6 +109,6 @@ class MediaUploadsData extends Component {
 
 MediaUploadsData.propTypes = {
   setDisplayString: PropTypes.func.isRequired,
-}
+};
 
 export default MediaUploadsData;

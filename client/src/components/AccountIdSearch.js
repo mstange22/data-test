@@ -56,7 +56,7 @@ class AccountIdSearch extends Component {
 
   onChange = (event, { newValue, method }) => {
     this.setState({
-      value: newValue
+      value: newValue,
     });
     this.props.setSearchValue(newValue);
   };
@@ -95,8 +95,8 @@ class AccountIdSearch extends Component {
     const inputProps = {
       placeholder: 'Enter an Account ID',
       value,
-      onChange: this.onChange
-    }
+      onChange: this.onChange,
+    };
     return (
       <div className="watcher-search-container">
         <Autosuggest
@@ -116,6 +116,6 @@ class AccountIdSearch extends Component {
 AccountIdSearch.propTypes = {
   onAccountIdSelected: PropTypes.func.isRequired,
   activeUserData: PropTypes.array.isRequired,
-}
+};
 
 export default AccountIdSearch;

@@ -229,6 +229,6 @@ class EmotionData extends Component {
 
 EmotionData.propTypes = {
   setDisplayString: PropTypes.func.isRequired,
-}
+};
 
 export default EmotionData;

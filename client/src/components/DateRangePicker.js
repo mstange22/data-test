@@ -17,7 +17,7 @@ class DateRangePicker extends Component {
     // console.log('date picker date:', date);
     if (moment(date.endDate).diff(date.startDate, 'days') > 0) {
       document.getElementById('chart-container').innerHTML = '';
-      this.props.onDateRangePicked({ startDate: date.startDate, endDate: date.endDate })
+      this.props.onDateRangePicked({ startDate: date.startDate, endDate: date.endDate });
     }
   }
 
@@ -40,6 +40,6 @@ DateRangePicker.propTypes = {
   onDateRangePicked: PropTypes.func.isRequired,
   minDate: PropTypes.object.isRequired,
   maxDate: PropTypes.object.isRequired,
-}
+};
 
 export default DateRangePicker;

@@ -21,6 +21,6 @@ const Notification = props =>
 Notification.propTypes = {
   errorMessage: PropTypes.string.isRequired,
   onCloseNotification: PropTypes.func.isRequired,
-}
+};
 
 export default Notification;
