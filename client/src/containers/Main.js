@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import DataDisplay from './DataDisplay';
-import { setState } from '../redux/actions';
 import '../css/style.css';
 import 'muze/dist/muze.css';
 
@@ -13,17 +12,6 @@ class Main extends Component {
     this.state = {
       displayMode: '',
     };
-  }
-
-  componentDidMount() {
-    console.log('state:', this.props.state);
-    this.props.setState({ greeting: 'hello world'});
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.state !== prevProps.state) {
-      console.log('newState:', this.props.state);
-    }
   }
 
   render() {
@@ -41,12 +29,10 @@ class Main extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  state,
+const mapStateToProps = () => ({
 });
 
 const mapDispatchToProps = {
-  setState,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);
