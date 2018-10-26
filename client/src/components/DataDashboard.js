@@ -1,15 +1,21 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import moment from 'moment';
 import DateRangePicker from './DateRangePicker';
 import Search from './Search';
+import { setSearchValue } from '../redux/actions';
 
 class DataDashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-
     };
+  }
+
+  onCheckboxChange = (e) => {
+    this.props.setSearchValue('');
+    this.props.checkboxes[0].onChange(e);
   }
 
   render() {
@@ -23,7 +29,7 @@ class DataDashboard extends Component {
                 name={checkbox.name}
                 type="checkbox"
                 checked={checkbox.checked}
-                onChange={checkbox.onChange}
+                onChange={this.onCheckboxChange}
               />
               {checkbox.label}
             </label>
@@ -54,6 +60,16 @@ DataDashboard.propTypes = {
   onSearchTargetSelected: PropTypes.func.isRequired,
   clearFilterButtonDisabled: PropTypes.bool.isRequired,
   clearFilterButtonOnClick: PropTypes.func.isRequired,
+  setSearchValue: PropTypes.func.isRequired,
 };
 
-export default DataDashboard;
+const mapStateToProps = (state) => ({
+  activeAccounts: state.activeAccounts,
+  allAccounts: state.allAccounts,
+});
+
+const mapDispatchToProps = {
+  setSearchValue,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(DataDashboard);

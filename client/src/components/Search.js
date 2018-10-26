@@ -1,22 +1,23 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { Button } from 'react-bootstrap';
 import DeviceSearch from './DeviceSearch';
 import WatcherSearch from './WatcherSearch';
 import AccountIdSearch from './AccountIdSearch';
+import { setSearchValue } from '../redux/actions';
 
 class Search extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: '',
     };
   }
 
   handleClearFilterButtonClick = (e) => {
     e.preventDefault();
     this.props.clearFilterButtonOnClick();
-    this.setState({ value: '' });
+    this.props.setSearchValue('');
   }
 
   render() {
@@ -28,7 +29,6 @@ class Search extends Component {
           <DeviceSearch
             deviceData={data}
             onDeviceSelected={onSearchTargetSelected}
-            setSearchValue={(value) => this.setState({ value })}
             value={this.state.value}
           />
         );
@@ -38,7 +38,6 @@ class Search extends Component {
           <WatcherSearch
             activeUserData={data}
             onWatcherSelected={onSearchTargetSelected}
-            setSearchValue={(value) => this.setState({ value })}
             value={this.state.value}
           />
         );
@@ -48,7 +47,6 @@ class Search extends Component {
             <AccountIdSearch
               activeUserData={data}
               onAccountIdSelected={onSearchTargetSelected}
-              setSearchValue={(value) => this.setState({ value })}
               value={this.state.value}
             />
           );
@@ -72,11 +70,18 @@ class Search extends Component {
   }
 }
 
-Search.PropTypes = {
+Search.propTypes = {
   data: PropTypes.array.isRequired,
   onSearchTargetSelected: PropTypes.func.isRequired,
-  clearFilterButtonDisabled: PropTypes.func.isRequired,
+  clearFilterButtonDisabled: PropTypes.bool.isRequired,
   clearFilterButtonOnClick: PropTypes.func.isRequired,
+  setSearchValue: PropTypes.func.isRequired,
 };
 
-export default Search;
+const mapStateToProps = () => ({
+});
+
+const mapDispatchToProps = {
+  setSearchValue,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Search);
