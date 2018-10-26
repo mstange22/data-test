@@ -1,6 +1,5 @@
 import * as types from './constants';
 
-// actions
 export function setState(newState) {
   return {
     type: types.SET_STATE,
@@ -9,3 +8,10 @@ export function setState(newState) {
     },
   };
 }
+
+export const setSearchValue = (searchValue) => ({
+  type: types.SET_SEARCH_VALUE,
+  payload: {
+    searchValue,
+  },
+});
