@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
+import { setSearchValue } from '../redux/actions';
 
 class WatcherSearch extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: '',
       suggestions: [],
       watcherInfo: [],
       watcherIds: [],
@@ -22,9 +23,6 @@ class WatcherSearch extends Component {
   componentDidUpdate() {
     if (this.submitted) {
       this.handleWatcherChange();
-    }
-    if (this.props.value !== this.state.value) {
-      this.setState({ value: this.props.value });
     }
   }
 
@@ -49,7 +47,7 @@ class WatcherSearch extends Component {
       .map(section => {
         return {
           title: section.title,
-          info: section.info.filter(id => id && id.toString().toLowerCase().slice(0, inputLength) === inputValue)
+          info: section.info.filter(id => id && id.toString().toLowerCase().slice(0, inputLength) === inputValue),
         };
       })
       .filter(section => section.info.length > 0);
@@ -75,7 +73,7 @@ class WatcherSearch extends Component {
 
   onChange = (event, { newValue, method }) => {
     this.setState({
-      value: newValue
+      value: newValue,
     });
     this.props.setSearchValue(newValue);
   };
@@ -88,7 +86,7 @@ class WatcherSearch extends Component {
 
   onSuggestionsClearRequested = () => {
     this.setState({
-      suggestions: []
+      suggestions: [],
     });
   };
 
@@ -109,13 +107,12 @@ class WatcherSearch extends Component {
   }
 
   render() {
-    // console.log('state value:', this.state.value);
-    const { value, suggestions } = this.state;
+    const { suggestions } = this.state;
     const inputProps = {
       placeholder: 'Enter a Family Code or Watcher ID',
-      value,
+      value: this.props.searchValue,
       onChange: this.onChange,
-    }
+    };
     return (
       <div className="watcher-search-container">
         <Autosuggest
@@ -138,8 +135,15 @@ class WatcherSearch extends Component {
 WatcherSearch.propTypes = {
   onWatcherSelected: PropTypes.func.isRequired,
   activeUserData: PropTypes.array.isRequired,
-  value: PropTypes.string.isRequired,
   setSearchValue: PropTypes.func.isRequired,
-}
+};
 
-export default WatcherSearch;
+const mapStateToProps = ({ searchValue }) => ({
+  searchValue,
+});
+
+const mapDispatchToProps = {
+  setSearchValue,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(WatcherSearch);

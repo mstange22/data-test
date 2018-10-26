@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
+import { setSearchValue } from '../redux/actions';
 
 class DeviceSearch extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: '',
       suggestions: [],
       deviceInfo: [],
       deviceIds: [],
@@ -19,12 +20,9 @@ class DeviceSearch extends Component {
     this.getDeviceInfo();
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate() {
     if (this.submitted) {
       this.handleDeviceChange();
-    }
-    if (this.props.value !== this.state.value) {
-      this.setState({ value: this.props.value });
     }
   }
 
@@ -104,11 +102,10 @@ class DeviceSearch extends Component {
   }
 
   render() {
-    // console.log('state value:', this.state.value);
-    const { value, suggestions } = this.state;
+    const { suggestions } = this.state;
     const inputProps = {
       placeholder: 'Enter a Family Code or Device ID',
-      value,
+      value: this.props.searchValue,
       onChange: this.onChange,
     };
     return (
@@ -133,6 +130,15 @@ class DeviceSearch extends Component {
 DeviceSearch.propTypes = {
   onDeviceSelected: PropTypes.func.isRequired,
   deviceData: PropTypes.array.isRequired,
+  setSearchValue: PropTypes.func.isRequired,
 };
 
-export default DeviceSearch;
+const mapStateToProps = ({ searchValue }) => ({
+  searchValue,
+});
+
+const mapDispatchToProps = {
+  setSearchValue,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(DeviceSearch);

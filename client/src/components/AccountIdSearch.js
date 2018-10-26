@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
+import { setSearchValue } from '../redux/actions';
 
 class AccountIdSearch extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: '',
       suggestions: [],
       accountIds: [],
     };
@@ -20,9 +21,6 @@ class AccountIdSearch extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (this.submitted) {
       this.handleAccountChange();
-    }
-    if (this.props.value !== this.state.value) {
-      this.setState({ value: this.props.value });
     }
   }
 
@@ -69,7 +67,7 @@ class AccountIdSearch extends Component {
 
   onSuggestionsClearRequested = () => {
     this.setState({
-      suggestions: []
+      suggestions: [],
     });
   };
 
@@ -91,10 +89,10 @@ class AccountIdSearch extends Component {
 
   render() {
     // console.log('state value:', this.state.value);
-    const { value, suggestions } = this.state;
+    const { suggestions } = this.state;
     const inputProps = {
       placeholder: 'Enter an Account ID',
-      value,
+      value: this.props.searchValue,
       onChange: this.onChange,
     };
     return (
@@ -116,6 +114,14 @@ class AccountIdSearch extends Component {
 AccountIdSearch.propTypes = {
   onAccountIdSelected: PropTypes.func.isRequired,
   activeUserData: PropTypes.array.isRequired,
+  setSearchValue: PropTypes.func.isRequired,
 };
 
-export default AccountIdSearch;
+const mapStateToProps = ({ searchValue }) => ({
+  searchValue,
+});
+
+const mapDispatchToProps = {
+  setSearchValue,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(AccountIdSearch);
