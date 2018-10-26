@@ -3,9 +3,7 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
   app.get('/watch', (req, res) => {
     watchStatsConnection.query('SELECT * FROM watch_day', (err, data) => {
       if (err) throw(err);
-      else {
-        res.json(data);
-      }
+      else res.json(data);
     });
   });
 
@@ -13,9 +11,7 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
     const queryString = 'SELECT * FROM emotion_day';
     watchStatsConnection.query(queryString, (err, data) => {
       if (err) throw(err);
-      else {
-        res.json(data);
-      }
+      else res.json(data);
     });
   });
 
@@ -31,9 +27,23 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
     );
     dbConnection.query(queryString, (err, data) => {
       if (err) throw(err);
-      else {
-        res.json(data);
-      }
+      else res.json(data);
+    });
+  });
+
+  app.get('/accounts/all', (req, res) => {
+    const queryString = (
+      'SELECT \
+        patient_account_id, \
+        read_write_share_code \
+      FROM \
+        album a \
+      WHERE \
+        patient_account_id IS NOT NULL'
+    );
+    dbConnection.query(queryString, (err, data) => {
+      if (err) throw(err);
+      else res.json(data);
     });
   });
 
@@ -41,9 +51,7 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
     const queryString = 'SELECT * FROM account WHERE is_patient = \'0\' AND phone_number is not null';
     dbConnection.query(queryString, (err, data) => {
       if (err) throw(err);
-      else {
-        res.json(data);
-      }
+      else res.json(data);
     });
   });
 
@@ -51,9 +59,7 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
     const queryString = 'SELECT * FROM status';
     watchStatsConnection.query(queryString, (err, data) => {
       if (err) throw(err);
-      else {
-        res.json(data);
-      }
+      else res.json(data);
     });
   });
 
@@ -61,9 +67,7 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
     const queryString = 'SELECT * FROM music';
     watchStatsConnection.query(queryString, (err, data) => {
       if (err) throw(err);
-      else {
-        res.json(data);
-      }
+      else res.json(data);
     });
   });
 
@@ -101,9 +105,7 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
 
     dbConnection.query(queryString, (err, data) => {
       if (err) throw(err);
-      else {
-        res.json(data);
-      }
+      else res.json(data);
     });
   });
 
@@ -111,9 +113,7 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
     const queryString = ('SELECT * FROM sms_message');
     dbConnection.query(queryString, (err, data) => {
       if (err) throw(err);
-      else {
-        res.json(data);
-      }
+      else res.json(data);
     });
   });
 };
