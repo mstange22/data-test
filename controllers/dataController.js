@@ -23,7 +23,7 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
       FROM \
         album a \
         JOIN customer_order co \
-        ON a.album_id = co.album_id AND (co.status = \'active\' or co.status = \'trialing\' or co.status = \'past_due\')'
+        ON a.album_id = co.album_id AND (co.status = \'active\' or co.status = \'trialing\')'
     );
     dbConnection.query(queryString, (err, data) => {
       if (err) throw(err);
@@ -96,7 +96,7 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
         ON m.album_id = a.album_id \
         LEFT JOIN customer_order co \
         ON co.album_id = a.album_id \
-        WHERE a.rachel_number IS NOT NULL AND co.order_id IS NOT NULL AND (co.status = \'active\' OR co.status = \'trialing\') \
+        WHERE a.rachel_number IS NOT NULL AND co.order_id IS NOT NULL AND (co.status = \'active\') \
         GROUP BY a.album_Id \
         ORDER BY media_count ASC) x \
       GROUP BY x.media_count \
