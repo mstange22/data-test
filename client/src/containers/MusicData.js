@@ -147,7 +147,6 @@ class MusicData extends Component {
       }
       schema.push(node);
     });
-    console.log('schema:', schema);
 
     const dm = new DataModel(filteredMusicData, schema);
     const canvas = env.canvas();
