@@ -27,7 +27,7 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
       FROM \
         album a \
         JOIN customer_order co \
-        ON a.album_id = co.album_id AND (co.status = \'active\' or co.status = \'trialing\')'
+        ON a.album_id = co.album_id AND (co.status = \'active\' or co.status = \'trialing\' or co.status = \'past_due\')'
     );
     dbConnection.query(queryString, (err, data) => {
       if (err) throw(err);
@@ -54,7 +54,7 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
       else {
         res.json(data);
       }
-    })
+    });
   });
 
   app.get('/music', (req, res) => {
@@ -64,7 +64,7 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
       else {
         res.json(data);
       }
-    })
+    });
   });
 
   app.get('/media/uploads', (req, res) => {
@@ -116,4 +116,4 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
       }
     });
   });
-}
+};
