@@ -1,2 +1,4 @@
 export const SET_STATE = 'SET_STATE';
 export const SET_SEARCH_VALUE = 'SET_SEARCH_VALUE';
+export const SET_ALL_ACCOUNTS = 'SET_ALL_ACCOUNTS';
+export const SET_ACTIVE_ACCOUNTS = 'SET_ACTIVE_ACCOUNTS';

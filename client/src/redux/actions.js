@@ -15,3 +15,17 @@ export const setSearchValue = (searchValue) => ({
     searchValue,
   },
 });
+
+export const setAllAccounts = (allAccounts) => ({
+  type: types.SET_ALL_ACCOUNTS,
+  payload: {
+    allAccounts,
+  },
+});
+
+export const setActiveAccounts = (activeAccounts) => ({
+  type: types.SET_ACTIVE_ACCOUNTS,
+  payload: {
+    activeAccounts,
+  },
+});
