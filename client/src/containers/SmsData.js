@@ -7,7 +7,7 @@ import moment from 'moment';
 import DataDashboard from '../components/DataDashboard';
 import Notification from '../components/Notification';
 import Spinner from '../components/Spinner';
-import { setState } from '../redux/actions';
+import { setSearchValue } from '../redux/actions';
 
 const env = muze();
 const CHART_CONTAINER_HEIGHT = window.innerHeight - 580;
@@ -27,6 +27,7 @@ class SmsData extends Component {
       selectedOption: 'smsCount',
       loadingSmsData: false,
     };
+    props.setSearchValue('');
   }
 
   componentDidMount() {
@@ -116,7 +117,6 @@ class SmsData extends Component {
       schema.push(node);
     });
 
-    // console.log('schema:', schema);
     const dm = new DataModel(filteredSmsData, schema);
     const canvas = env.canvas();
     canvas
@@ -200,14 +200,14 @@ class SmsData extends Component {
 
 SmsData.propTypes = {
   setDisplayString: PropTypes.func.isRequired,
+  setSearchValue: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  state,
+const mapStateToProps = () => ({
 });
 
 const mapDispatchToProps = {
-  setState,
+  setSearchValue,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SmsData);
