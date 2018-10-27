@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import moment from 'moment';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
 import Notification from '../components/Notification';
 import Spinner from '../components/Spinner';
 import DataDashboard from '../components/DataDashboard';
+import { setSearchValue, setCurrentFamilyCode, setCurrentWatcherId } from '../redux/actions';
 
 const env = muze();
-const CHART_CONTAINER_HEIGHT = window.innerHeight - 580;
+const CHART_CONTAINER_HEIGHT = window.innerHeight - 620;
 const CHART_CONTAINER_WIDTH = window.innerWidth - 280;
 
 class WatchData extends Component {
@@ -16,17 +18,18 @@ class WatchData extends Component {
     super(props);
     this.state = {
       watchData: [],
-      activeWatcherAccounts: [],
       activeWatcherIds: [],
       activeFamilyCodes: [],
       displayError: false,
       selectedOption: 'minutesWatched',
       currentWatcherId: 0,
       currentFamilyCode: '',
-      renderMode: 'familyCode',
-      hasAddedFamilyCodes: false,
+      displayMode: 'familyCode',
+      hasInitializedData: false,
       loadingData: false,
+      checked: true,
     };
+    props.setSearchValue('');
   }
 
   componentDidMount() {
@@ -34,22 +37,27 @@ class WatchData extends Component {
   }
 
   componentDidUpdate() {
-    if (this.state.activeWatcherAccounts.length && this.state.watchData.length && !this.state.hasAddedFamilyCodes) {
-      this.addFamilyCodesToWatchData();
+    if (this.props.allAccounts.length && this.props.activeAccounts.length && this.state.watchData.length && !this.state.hasInitializedData) {
+      this.initializeData();
     }
   }
 
-  addFamilyCodesToWatchData = () => {
-    const { activeWatcherAccounts } = this.state;
+  initializeData = () => {
+    const { allAccounts, activeAccounts } = this.props;
     const watchData = this.state.watchData.slice();
     watchData.forEach(d => {
-      const idx = activeWatcherAccounts.findIndex(account => account.patient_account_id === d.watcher_id);
+      const idx = allAccounts.findIndex(account => account.patient_account_id === d.watcher_id);
       if (idx !== -1) {
-        d['Family Code'] = activeWatcherAccounts[idx].read_write_share_code;
+        d['Family Code'] = allAccounts[idx].read_write_share_code;
       }
     });
     console.log('watch data after adding family codes:', watchData);
-    this.setState({ watchData, hasAddedFamilyCodes: true });
+    this.setState({
+      watchData,
+      activeWatcherIds: activeAccounts.reduce((acc, d) => [...acc, d.patient_account_id], []),
+      activeFamilyCodes: activeAccounts.reduce((acc, d) => [...acc, d.read_write_share_code], []),
+      hasInitializedData: true,
+    });
   }
 
   getWatchData = () => {
@@ -72,16 +80,6 @@ class WatchData extends Component {
         });
       })
       .catch(err => console.log(err.message));
-    API.getActiveWatcherAccounts()
-      .then(res => {
-        console.log('active watcher accounts res:', res.data);
-        this.setState({
-          activeWatcherAccounts: res.data,
-          activeWatcherIds: res.data.reduce((acc, d) => [...acc, d.patient_account_id], []),
-          activeFamilyCodes: res.data.reduce((acc, d) => [...acc, d.read_write_share_code], []),
-        });
-      })
-      .catch(err => console.log(err.message));
   }
 
   triggerError = (errorMessage) => {
@@ -89,25 +87,29 @@ class WatchData extends Component {
   }
 
   renderWatchData = (range = null) => {
-    const { watchData, renderMode } = this.state;
+    const { watchData, displayMode } = this.state;
     if (watchData.length < 1) return null;
-    let filteredWatchData = [];
+    let filteredWatchData = watchData.slice();
 
-    // filter data dependent on renderMode
-    if (renderMode === 'watcherId') {
-      filteredWatchData = watchData.filter(d => this.state.activeWatcherIds.includes(d['Watcher ID']));
-    } else {
-      filteredWatchData = watchData.filter(d => this.state.activeFamilyCodes.includes(d['Family Code']));
+    // filter data dependent on displayMode
+    if (this.state.checked) {
+      if (displayMode === 'watcherId') {
+        filteredWatchData = watchData.filter(d => this.state.activeWatcherIds.includes(d['Watcher ID']));
+      } else {
+        filteredWatchData = watchData.filter(d => this.state.activeFamilyCodes.includes(d['Family Code']));
+      }
     }
-    if (filteredWatchData.length < 1) return null;
+
     // check for watcher ID filter
-    if (renderMode === 'watcherId' && this.state.currentWatcherId !== 0) {
-      filteredWatchData = filteredWatchData.filter(d => d['Watcher ID'] === this.state.currentWatcherId);
+    if (displayMode === 'watcherId' && this.props.currentWatcherId !== 0) {
+      filteredWatchData = filteredWatchData.filter(d => d['Watcher ID'] === this.props.currentWatcherId);
     }
     // check for family code filter
-    if (renderMode === 'familyCode' && this.state.currentFamilyCode !== '') {
-      filteredWatchData = filteredWatchData.filter(d => d['Family Code'] === this.state.currentFamilyCode);
+    if (displayMode === 'familyCode' && this.props.currentFamilyCode !== '') {
+      filteredWatchData = filteredWatchData.filter(d => d['Family Code'] === this.props.currentFamilyCode);
     }
+
+    if (filteredWatchData.length < 1) return null;
 
     if (range) {
       const startDate = range.startDate.format('M/DD/YY');
@@ -139,7 +141,7 @@ class WatchData extends Component {
       .height(CHART_CONTAINER_HEIGHT)
       .rows(['Total Watch Minutes'])
       .columns(['Date'])
-      .color(renderMode === 'watcherId' ? 'Watcher ID' : 'Family Code')
+      .color(displayMode === 'watcherId' ? 'Watcher ID' : 'Family Code')
       .mount('#chart-container')
     ;
   }
@@ -149,11 +151,13 @@ class WatchData extends Component {
     this.setState({ displayError: false });
   }
 
-  onWatcherSelected = (watcher, renderMode) => {
-    if (renderMode === 'watcherId') {
-      this.setState({ currentWatcherId: watcher, renderMode });
+  onWatcherSelected = (watcher, displayMode) => {
+    if (displayMode === 'watcherId') {
+      this.setState({ currentWatcherId: watcher, displayMode });
+      this.props.setCurrentWatcherId(watcher);
     } else {
-      this.setState({ currentFamilyCode: watcher, renderMode });
+      this.setState({ currentFamilyCode: watcher, displayMode });
+      this.props.setCurrentFamilyCode(watcher);
     }
   }
 
@@ -169,24 +173,30 @@ class WatchData extends Component {
     const activeUserWatchData = watchData
       .slice()
       .filter(d => this.state.activeWatcherIds.includes(d.watcher_id));
-    if (activeUserWatchData.length < 1 || !this.state.hasAddedFamilyCodes) return null;
+    if (activeUserWatchData.length < 1 || !this.state.hasInitializedData) return null;
     return (
       <DataDashboard
         data={activeUserWatchData}
         checkboxes={[{
-          label: 'Minutes Watched',
-          name: 'minutesWatched',
-          checked: this.state.selectedOption === 'minutesWatched',
+          label: 'Only Display Active Accounts',
+          name: 'activeOnly',
+          checked: this.state.checked,
           onChange: (e) => {
-            e.preventDefault();
-            const { name } = e.target;
-            this.setState({ selectedOption: name });
+            document.getElementById('chart-container').innerHTML = '';
+            this.setState({
+              checked: e.target.checked,
+              currentFamilyCode: '',
+              currentWatcherId: 0,
+             });
+             this.props.setSearchValue('');
+             this.props.setCurrentFamilyCode('');
+             this.props.setCurrentWatcherId(0);
           },
         }]}
         searchType="watcher"
         onSearchTargetSelected={this.onWatcherSelected}
         onDateRangePicked={range => this.renderWatchData(range)}
-        clearFilterButtonDisabled={this.state.currentFamilyCode === '' && this.state.currentWatcherId === 0}
+        clearFilterButtonDisabled={this.props.currentFamilyCode === '' && this.props.currentWatcherId === 0}
         clearFilterButtonOnClick={() => this.setState({ currentFamilyCode: '', currentWatcherId: 0})}
       />
     );
@@ -211,9 +221,41 @@ class WatchData extends Component {
     );
   }
 
+  handleRadioButtonChange = () => {
+    document.getElementById('chart-container').innerHTML = '';
+    this.setState({ displayMode: this.state.displayMode === 'watcherId' ? 'familyCode' : 'watcherId' });
+    this.props.setSearchValue('');
+  }
+
+  renderDisplayModeSelection = () => {
+    return (
+      <div className="display-mode-selector-container">
+        <label className="radio-label">
+          <input
+            name="radio-watcher"
+            type="radio"
+            checked={this.state.displayMode === 'watcherId'}
+            onChange={this.handleRadioButtonChange}
+          />
+          {'Watcher Id'}
+        </label>
+        <label className="radio-label">
+          <input
+            name="radio-watcher"
+            type="radio"
+            checked={this.state.displayMode === 'familyCode'}
+            onChange={this.handleRadioButtonChange}
+          />
+          {'Family Code'}
+        </label>
+      </div>
+    );
+  }
+
   render() {
     return (
       <div className="data-container">
+        {this.renderDisplayModeSelection()}
         <div id="chart-container">
           {this.renderSpinner()}
           {this.renderWatchData()}
@@ -227,6 +269,22 @@ class WatchData extends Component {
 
 WatchData.propTypes = {
   setDisplayString: PropTypes.func.isRequired,
+  setSearchValue: PropTypes.func.isRequired,
+  currentFamilyCode: PropTypes.string.isRequired,
+  currentWatcherId: PropTypes.number.isRequired,
 };
 
-export default WatchData;
+const mapStateToProps = (state) => ({
+  activeAccounts: state.activeAccounts,
+  allAccounts: state.allAccounts,
+  currentWatcherId: state.currentWatcherId,
+  currentFamilyCode: state.currentFamilyCode,
+});
+
+const mapDispatchToProps = {
+  setSearchValue,
+  setCurrentWatcherId,
+  setCurrentFamilyCode,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(WatchData);
