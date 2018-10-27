@@ -12,6 +12,10 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, allAccounts: action.payload.allAccounts };
     case types.SET_ACTIVE_ACCOUNTS:
       return { ...state, activeAccounts: action.payload.activeAccounts };
+    case types.SET_CURRENT_WATCHER_ID:
+      return { ...state, currentWatcherId: action.payload.currentWatcherId };
+    case types.SET_CURRENT_FAMILY_CODE:
+      return { ...state, currentFamilyCode: action.payload.currentFamilyCode };
     default:
       return state;
   }
