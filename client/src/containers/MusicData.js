@@ -7,6 +7,7 @@ import moment from 'moment';
 import DataDashboard from '../components/DataDashboard';
 import Notification from '../components/Notification';
 import Spinner from '../components/Spinner';
+import { setSearchValue } from '../redux/actions';
 
 const env = muze();
 const CHART_CONTAINER_HEIGHT = window.innerHeight - 580;
@@ -17,7 +18,6 @@ class MusicData extends Component {
     super(props);
     this.state = {
       musicData: [],
-      activeWatcherAccounts: [],
       activeWatcherIds: [],
       activeFamilyCodes: [],
       displayError: false,
@@ -26,9 +26,11 @@ class MusicData extends Component {
       currentFamilyCode: '',
       renderMode: 'familyCode',
       selectedOption: 'musicData',
-      hasAddedFamilyCodes: false,
+      hasInitializedData: false,
       loadingData: false,
+      checked: true,
     };
+    props.setSearchValue('');
   }
 
   componentDidMount() {
@@ -36,24 +38,27 @@ class MusicData extends Component {
   }
 
   componentDidUpdate() {
-    if (this.state.activeWatcherAccounts.length && this.state.musicData.length && !this.state.hasAddedFamilyCodes) {
-      this.addFamilyCodesToData();
+    if (this.props.allAccounts.length && this.props.activeAccounts.length && this.state.musicData.length && !this.state.hasInitializedData) {
+      this.initializeData();
     }
   }
 
-  addFamilyCodesToData = () => {
-    const { activeWatcherAccounts } = this.state;
+  initializeData = () => {
+    const { allAccounts, activeAccounts } = this.props;
     const musicData = this.state.musicData.slice();
     musicData.forEach(d => {
-      const idx = activeWatcherAccounts.findIndex(account => account.patient_account_id === d.watcher_id);
+      const idx = allAccounts.findIndex(account => account.patient_account_id === d.watcher_id);
       if (idx !== -1) {
-        // console.log('musicData index:', idx, 'family code:', activeWatcherAccounts[idx].read_write_share_code);
-        // console.log('**** match ****');
-        d['Family Code'] = activeWatcherAccounts[idx].read_write_share_code;
+        d['Family Code'] = allAccounts[idx].read_write_share_code;
       }
     });
     console.log('music data after adding family codes:', musicData);
-    this.setState({ musicData, hasAddedFamilyCodes: true });
+    this.setState({
+      musicData,
+      activeWatcherIds: activeAccounts.reduce((acc, d) => [...acc, d.patient_account_id], []),
+      activeFamilyCodes: activeAccounts.reduce((acc, d) => [...acc, d.read_write_share_code], []),
+      hasInitializedData: true,
+    });
   }
 
   getMusicData = () => {
@@ -62,7 +67,6 @@ class MusicData extends Component {
     this.setState({ musicData: [], loadingData: true });
     API.getMusicData()
       .then(res => {
-        console.log('music res:', res.data);
         this.setState({
           musicData: res.data
             .slice()
@@ -79,16 +83,6 @@ class MusicData extends Component {
         });
       })
       .catch(err => console.log(err.message));
-    API.getActiveWatcherAccounts()
-      .then(res => {
-        console.log('active customer accounts res:', res.data);
-        this.setState({
-          activeWatcherAccounts: res.data,
-          activeWatcherIds: res.data.reduce((acc, d) => [...acc, d.patient_account_id], []),
-          activeFamilyCodes: res.data.reduce((acc, d) => [...acc, d.read_write_share_code], []),
-        });
-      })
-      .catch(err => console.log(err.message));
   }
 
   triggerError = (errorMessage) => {
@@ -100,26 +94,31 @@ class MusicData extends Component {
 
   renderMusicData = (range = null) => {
     const { musicData, renderMode } = this.state;
-    if (musicData.length < 1) return null;
+    if (musicData.length < 1 || !this.state.hasInitializedData) return null;
     let filteredMusicData = musicData.slice();
 
     // filter data dependent on renderMode
-    if (renderMode === 'watcherId') {
-      filteredMusicData = musicData.filter(d => this.state.activeWatcherIds.includes(d['Watcher ID']));
-    } else {
-      filteredMusicData = musicData.filter(d => this.state.activeFamilyCodes.includes(d['Family Code']));
+    if (this.state.checked) {
+      if (renderMode === 'watcherId') {
+        filteredMusicData = musicData.filter(d => this.state.activeWatcherIds.includes(d['Watcher ID']));
+      } else {
+        filteredMusicData = musicData.filter(d => this.state.activeFamilyCodes.includes(d['Family Code']));
+      }
     }
-    // console.log('filtered emotion data:', filteredEmotionData);
-    if (filteredMusicData.length < 1) return null;
-
     // check for account ID filter
     if (renderMode === 'watcherId' && this.state.currentWatcherId !== 0) {
       filteredMusicData = filteredMusicData.filter(d => d['Watcher ID'] === this.state.currentWatcherId);
     }
 
     if (renderMode === 'familyCode' && this.state.currentFamilyCode !== '') {
-      filteredMusicData = filteredMusicData.filter(d => d['Family Code'] === this.state.currentFamilyCode);
+      filteredMusicData = filteredMusicData.filter(d => {
+        if (d['Family Code'] === this.state.currentFamilyCode) {
+          return true;
+        }
+        return false;
+      });
     }
+    if (filteredMusicData.length < 1) return null;
 
     // check for date range filter
     if (range) {
@@ -187,18 +186,22 @@ class MusicData extends Component {
 
   renderDashboard = () => {
     const { musicData } = this.state;
-    if (musicData.length < 1 || !this.state.hasAddedFamilyCodes) return null;
+    if (musicData.length < 1 || !this.state.hasInitializedData) return null;
     return (
       <DataDashboard
         data={musicData}
         checkboxes={[{
-          label: 'Songs Played',
-          name: 'musicData',
-          checked: this.state.selectedOption === 'musicData',
+          label: 'Only Display Active Accounts',
+          name: 'activeOnly',
+          checked: this.state.checked,
           onChange: (e) => {
-            e.preventDefault();
-            const { name } = e.target;
-            this.setState({ selectedOption: name });
+            document.getElementById('chart-container').innerHTML = '';
+            this.setState({
+              checked: e.target.checked,
+              currentFamilyCode: '',
+              currentWatcherId: 0,
+             });
+             this.props.setSearchValue('');
           },
         }]}
         searchType="watcher"
@@ -245,13 +248,16 @@ class MusicData extends Component {
 
 MusicData.propTypes = {
   setDisplayString: PropTypes.func.isRequired,
+  setSearchValue: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  state,
+  activeAccounts: state.activeAccounts,
+  allAccounts: state.allAccounts,
 });
 
 const mapDispatchToProps = {
+  setSearchValue,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MusicData);

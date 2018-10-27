@@ -7,6 +7,7 @@ import moment from 'moment';
 import DataDashboard from '../components/DataDashboard';
 import Notification from '../components/Notification';
 import Spinner from '../components/Spinner';
+import { setSearchValue } from '../redux/actions';
 
 const env = muze();
 const CHART_CONTAINER_HEIGHT = window.innerHeight - 580;
@@ -17,12 +18,15 @@ class DeviceData extends Component {
     super(props);
     this.state = {
       deviceData: [],
+      activeWatcherAccounts: [],
+      activeWatcherIds: [],
+      activeFamilyCodes: [],
       displayError: false,
       errorMessage: '',
       currentDeviceId: 0,
       currentFamilyCode: '',
       renderMode: 'familyCode',
-      selectedOption: 'deviceData',
+      checked: false,
       loadingData: false,
     };
   }
@@ -54,6 +58,16 @@ class DeviceData extends Component {
         });
       })
       .catch(err => console.log(err.message));
+    API.getActiveWatcherAccounts()
+      .then(res => {
+        console.log('active customer accounts res:', res.data);
+        this.setState({
+          activeWatcherAccounts: res.data,
+          activeWatcherIds: res.data.reduce((acc, d) => [...acc, d.patient_account_id], []),
+          activeFamilyCodes: res.data.reduce((acc, d) => [...acc, d.read_write_share_code], []),
+        });
+      })
+      .catch(err => console.log(err.message));
   }
 
   triggerError = (errorMessage) => {
@@ -65,8 +79,12 @@ class DeviceData extends Component {
 
   renderDeviceData = (range = null) => {
     const { deviceData, renderMode } = this.state;
-    if (deviceData.length < 1) return null;
+    if (deviceData.length < 1 || this.state.activeFamilyCodes.length < 1) return null;
     let filteredDeviceData = deviceData.slice();
+
+    if (renderMode === 'familyCode' && this.state.checked) {
+      filteredDeviceData = deviceData.filter(d => this.state.activeFamilyCodes.includes(d['Family Code']));
+    }
 
     // check for account ID filter
     if (renderMode === 'deviceId' && this.state.currentDeviceId !== 0) {
@@ -124,6 +142,7 @@ class DeviceData extends Component {
       .mount('#chart-container')
       // .size('batt')
     ;
+    return null;
   }
 
   handleInputChange = (e) => {
@@ -134,9 +153,9 @@ class DeviceData extends Component {
 
   onDeviceSelected = (device, renderMode) => {
     if (renderMode === 'familyCode') {
-      this.setState({ currentFamilyCode: device, currentDeviceId: 0, renderMode });
+      this.setState({ currentFamilyCode: device, currentDeviceId: 0, renderMode, checked: false });
     } else {
-      this.setState({ currentDeviceId: device, currentFamilyCode: '', renderMode });
+      this.setState({ currentDeviceId: device, currentFamilyCode: '', renderMode, checked: false });
     }
   }
 
@@ -147,20 +166,25 @@ class DeviceData extends Component {
       <DataDashboard
         data={deviceData}
         checkboxes={[{
-          label: 'Device Pings',
-          name: 'deviceData',
-          checked: this.state.selectedOption === 'deviceData',
+          label: 'Only Display Active Accounts',
+          name: 'activeOnly',
+          checked: this.state.checked,
           onChange: (e) => {
-            e.preventDefault();
-            const { name } = e.target;
-            this.setState({ selectedOption: name });
+            document.getElementById('chart-container').innerHTML = '';
+            this.setState({
+              checked: e.target.checked,
+              renderMode: e.target.checked ? 'familyCode' : 'deviceId',
+              currentFamilyCode: '',
+              currentDeviceId: 0,
+             });
+             this.props.setSearchValue('');
           },
         }]}
         searchType="device"
         onSearchTargetSelected={this.onDeviceSelected}
         onDateRangePicked={range => this.renderDeviceData(range)}
         clearFilterButtonDisabled={this.state.currentFamilyCode === '' && this.state.currentDeviceId === 0}
-        clearFilterButtonOnClick={() => this.setState({ currentFamilyCode: '', currentDeviceId: 0})}
+        clearFilterButtonOnClick={() => this.setState({ currentFamilyCode: '', currentDeviceId: 0 })}
       />
     );
   }
@@ -202,11 +226,11 @@ DeviceData.propTypes = {
   setDisplayString: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  state,
+const mapStateToProps = () => ({
 });
 
 const mapDispatchToProps = {
+  setSearchValue,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeviceData);
