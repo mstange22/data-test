@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const DataHeader = (props) => {
   const { displayString } = props;
@@ -9,6 +10,10 @@ const DataHeader = (props) => {
       </h2>
     </div>
   );
+};
+
+DataHeader.propTypes = {
+  displayString: PropTypes.string.isRequired,
 };
 
 export default DataHeader;
