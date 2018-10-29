@@ -19,7 +19,8 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
     const queryString = (
       'SELECT \
         a.patient_account_id, \
-        a.read_write_share_code \
+        a.read_write_share_code, \
+        a.album_id \
       FROM \
         album a \
         JOIN customer_order co \
@@ -35,7 +36,8 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
     const queryString = (
       'SELECT \
         patient_account_id, \
-        read_write_share_code \
+        a.read_write_share_code, \
+        a.album_id \
       FROM \
         album a \
       WHERE \
@@ -72,6 +74,21 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
   });
 
   app.get('/media/uploads', (req, res) => {
+    const queryString = (
+      'SELECT * FROM media m \
+      JOIN customer_order co \
+      ON m.album_id = co.album_id \
+        AND (co.status = \'active\' or co.status = \'trialing\') \
+        AND (m.type = \'video\' or m.type = \'image\')'
+    );
+
+    dbConnection.query(queryString, (err, data) => {
+      if (err) throw(err);
+      else res.json(data);
+    });
+  });
+
+  app.get('/media/buckets', (req, res) => {
     const queryString = (
       'SELECT \
         x.media_count, \
