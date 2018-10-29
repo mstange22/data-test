@@ -12,4 +12,5 @@ export default {
   getSmsData: () => axios.get('/sms'),
   getDeviceData: () => axios.get('device'),
   getMusicData: () => axios.get('music'),
+  getSalesData: () => axios.get('sales'),
 };

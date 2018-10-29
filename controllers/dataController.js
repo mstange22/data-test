@@ -133,4 +133,12 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
       else res.json(data);
     });
   });
+
+  app.get('/sales', (req, res) => {
+    const queryString = ('SELECT * FROM customer_order WHERE create_date IS NOT NULL AND status <> \'unpaid\'');
+    dbConnection.query(queryString, (err, data) => {
+      if (err) throw(err);
+      else res.json(data);
+    });
+  });
 };
