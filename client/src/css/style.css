@@ -353,6 +353,7 @@ input[type=radio] {
   color: white;
   margin-top: 20px;
   margin-bottom: 30px;
+  /* min-height: 100px; */
 }
 
 .kpi-display-box {
@@ -381,7 +382,9 @@ input[type=radio] {
 }
 
 .kpi-header {
+  position: absolute;
   font-weight: bold;
+  left: 10px;
 }
 
 .kpi-total {
