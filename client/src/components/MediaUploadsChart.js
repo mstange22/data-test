@@ -8,7 +8,7 @@ const env = muze();
 const CHART_CONTAINER_HEIGHT = window.innerHeight - 580;
 const CHART_CONTAINER_WIDTH = window.innerWidth - 310;
 
-class MediaUploadsData extends Component {
+class MediaUploadsChart extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -60,7 +60,7 @@ class MediaUploadsData extends Component {
       .catch(err => console.log(err.message));
   }
 
-  renderMediaUploadsData = () => {
+  renderMediaUploadsChart = () => {
     const { mediaUploads } = this.state;
     if (mediaUploads.length < 1) {
       return null;
@@ -99,14 +99,14 @@ class MediaUploadsData extends Component {
       <div className="data-container">
         <div id="chart-container">
           {this.renderSpinner()}
-          {this.renderMediaUploadsData()}
+          {this.renderMediaUploadsChart()}
         </div>
       </div>
     );
   }
 }
 
-MediaUploadsData.propTypes = {
+MediaUploadsChart.propTypes = {
 };
 
-export default MediaUploadsData;
+export default MediaUploadsChart;
