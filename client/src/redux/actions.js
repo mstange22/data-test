@@ -43,3 +43,10 @@ export const setCurrentFamilyCode = currentFamilyCode => ({
     currentFamilyCode,
   },
 });
+
+export const setCurrentDeviceId = currentDeviceId => ({
+  type: types.SET_CURRENT_DEVICE_ID,
+  payload: {
+    currentDeviceId,
+  },
+});

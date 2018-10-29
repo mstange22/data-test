@@ -16,6 +16,8 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, currentWatcherId: action.payload.currentWatcherId };
     case types.SET_CURRENT_FAMILY_CODE:
       return { ...state, currentFamilyCode: action.payload.currentFamilyCode };
+    case types.SET_CURRENT_DEVICE_ID:
+      return { ...state, currentDeviceId: action.payload.currentDeviceId };
     default:
       return state;
   }
