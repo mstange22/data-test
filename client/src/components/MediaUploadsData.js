@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
-import Spinner from '../components/Spinner';
+import Spinner from './Spinner';
+import DataHeader from './DataHeader';
 
 const env = muze();
 const CHART_CONTAINER_HEIGHT = window.innerHeight - 580;
-const CHART_CONTAINER_WIDTH = window.innerWidth - 280;
+const CHART_CONTAINER_WIDTH = window.innerWidth - 310;
 
 class MediaUploadsData extends Component {
   constructor(props) {
@@ -19,9 +20,8 @@ class MediaUploadsData extends Component {
 
   componentDidMount() {
     document.getElementById('chart-container').innerHTML = '';
-    this.props.setDisplayString('Number of Media Uploads (Active Accounts)');
     this.setState({ mediaUploads: [], loadingData: true });
-    API.getMediaUploadsData()
+    API.getMediaUploadsByBucket()
       .then(res => {
           const mediaUploads = res.data.reduce((accum, d) => {
             if (d.media_count === 0) {
@@ -98,6 +98,7 @@ class MediaUploadsData extends Component {
   render() {
     return (
       <div className="data-container">
+        <DataHeader title="Number of Media Uploads (Active Accounts)" />
         <div id="chart-container">
           {this.renderSpinner()}
           {this.renderMediaUploadsData()}
@@ -108,7 +109,6 @@ class MediaUploadsData extends Component {
 }
 
 MediaUploadsData.propTypes = {
-  setDisplayString: PropTypes.func.isRequired,
 };
 
 export default MediaUploadsData;
