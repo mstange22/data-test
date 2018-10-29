@@ -4,7 +4,12 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 import DateRangePicker from './DateRangePicker';
 import Search from './Search';
-import { setSearchValue } from '../redux/actions';
+import {
+  setSearchValue,
+  setCurrentFamilyCode,
+  setCurrentWatcherId,
+  setCurrentDeviceId,
+} from '../redux/actions';
 
 class DataDashboard extends Component {
   constructor(props) {
@@ -15,6 +20,9 @@ class DataDashboard extends Component {
 
   onCheckboxChange = (e) => {
     this.props.setSearchValue('');
+    this.props.setCurrentFamilyCode('');
+    this.props.setCurrentWatcherId(0);
+    this.props.setCurrentDeviceId(0);
     this.props.checkboxes[0].onChange(e);
   }
 
@@ -38,8 +46,6 @@ class DataDashboard extends Component {
             data={this.props.data}
             searchType={this.props.searchType}
             onSearchTargetSelected={this.props.onSearchTargetSelected}
-            clearFilterButtonDisabled={this.props.clearFilterButtonDisabled}
-            clearFilterButtonOnClick={this.props.clearFilterButtonOnClick}
           />
         </div>
         <DateRangePicker
@@ -58,9 +64,10 @@ DataDashboard.propTypes = {
   searchType: PropTypes.string,
   onDateRangePicked: PropTypes.func.isRequired,
   onSearchTargetSelected: PropTypes.func.isRequired,
-  clearFilterButtonDisabled: PropTypes.bool.isRequired,
-  clearFilterButtonOnClick: PropTypes.func.isRequired,
   setSearchValue: PropTypes.func.isRequired,
+  setCurrentFamilyCode: PropTypes.func.isRequired,
+  setCurrentWatcherId: PropTypes.func.isRequired,
+  setCurrentDeviceId: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -70,6 +77,9 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
   setSearchValue,
+  setCurrentFamilyCode,
+  setCurrentWatcherId,
+  setCurrentDeviceId,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DataDashboard);
