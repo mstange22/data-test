@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import API from "../utils/API";
 import muze, { DataModel } from 'muze';
 import Spinner from './Spinner';
-import DataHeader from './DataHeader';
 
 const env = muze();
 const CHART_CONTAINER_HEIGHT = window.innerHeight - 580;
