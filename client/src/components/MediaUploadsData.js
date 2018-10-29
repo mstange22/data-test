@@ -98,7 +98,6 @@ class MediaUploadsData extends Component {
   render() {
     return (
       <div className="data-container">
-        <DataHeader title="Number of Media Uploads (Active Accounts)" />
         <div id="chart-container">
           {this.renderSpinner()}
           {this.renderMediaUploadsData()}
