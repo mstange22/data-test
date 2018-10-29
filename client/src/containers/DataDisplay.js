@@ -4,7 +4,7 @@ import DataHeader from '../components/DataHeader';
 import DataPlaceholder from '../components/DataPlaceholder';
 import WatchData from './WatchData';
 import EmotionData from './EmotionData';
-import MediaUploadsData from './MediaUploadsData';
+import MediaData from './MediaData';
 import SmsData from './SmsData';
 import DeviceData from './DeviceData';
 import MusicData from './MusicData';
@@ -24,28 +24,32 @@ class DataDisplay extends Component {
     }
   }
 
+  setDisplayString = (displayString) => {
+    this.setState({ displayString });
+  }
+
   renderData = () => {
     const { displayMode } = this.props;
     if (displayMode === '') return (
       <DataPlaceholder />
     );
     if (displayMode === 'watch') return (
-      <WatchData setDisplayString={displayString => this.setState({ displayString })} />
+      <WatchData setDisplayString={this.setDisplayString} />
     );
     if (displayMode === 'emotion') return (
-      <EmotionData setDisplayString={displayString => this.setState({ displayString })} />
+      <EmotionData setDisplayString={this.setDisplayString} />
     );
     if (displayMode === 'media') return (
-      <MediaUploadsData setDisplayString={displayString => this.setState({ displayString })} />
+      <MediaData setDisplayString={this.setDisplayString} />
     );
     if (displayMode === 'sms') return (
-      <SmsData setDisplayString={displayString => this.setState({ displayString })} />
+      <SmsData setDisplayString={this.setDisplayString} />
     );
     if (displayMode === 'device') return (
-      <DeviceData setDisplayString={displayString => this.setState({ displayString })} />
+      <DeviceData setDisplayString={this.setDisplayString} />
     );
     if (displayMode === 'music') return (
-      <MusicData setDisplayString={displayString => this.setState({ displayString })} />
+      <MusicData setDisplayString={this.setDisplayString} />
     );
   }
 
