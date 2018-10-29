@@ -8,6 +8,7 @@ import MediaData from './MediaData';
 import SmsData from './SmsData';
 import DeviceData from './DeviceData';
 import MusicData from './MusicData';
+import SalesData from './SalesData';
 
 class DataDisplay extends Component {
   constructor(props) {
@@ -50,6 +51,9 @@ class DataDisplay extends Component {
     );
     if (displayMode === 'music') return (
       <MusicData setDisplayString={this.setDisplayString} />
+    );
+    if (displayMode === 'sales') return (
+      <SalesData setDisplayString={this.setDisplayString} />
     );
   }
 

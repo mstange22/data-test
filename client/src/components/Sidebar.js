@@ -51,6 +51,7 @@ class Sidebar extends Component {
           <li><a onClick={() => this.props.handleSidebarClick('sms')}>SMS</a></li>
           <li><a onClick={() => this.props.handleSidebarClick('device')}>Device</a></li>
           <li><a onClick={() => this.props.handleSidebarClick('music')}>Music</a></li>
+          <li><a onClick={() => this.props.handleSidebarClick('sales')}>Sales</a></li>
         </ul>
       </div>
     );
