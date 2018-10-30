@@ -7,11 +7,12 @@ import moment from 'moment';
 import DataDashboard from '../components/DataDashboard';
 import Notification from '../components/Notification';
 import Spinner from '../components/Spinner';
+import KpiData from '../components/KpiData';
 import { setSearchValue } from '../redux/actions';
 
 const env = muze();
-const CHART_CONTAINER_HEIGHT = window.innerHeight - 580;
-const CHART_CONTAINER_WIDTH = window.innerWidth - 280;
+const CHART_CONTAINER_HEIGHT = window.innerHeight - 760;
+const CHART_CONTAINER_WIDTH = window.innerWidth - 310;
 
 class SmsData extends Component {
   constructor(props) {
@@ -168,7 +169,7 @@ class SmsData extends Component {
   renderSpinner = () => {
     if (!this.state.loadingSmsData) return null;
     return (
-      <Spinner height={CHART_CONTAINER_HEIGHT} width={CHART_CONTAINER_WIDTH} />
+      <Spinner />
     );
   }
 
@@ -187,6 +188,9 @@ class SmsData extends Component {
   render() {
     return (
       <div className="data-container">
+        <KpiData
+          kpiData={this.state.smsData}
+        />
         <div id="chart-container">
           {this.renderSpinner()}
           {this.renderSmsData()}
