@@ -6,9 +6,6 @@ import Spinner from '../components/Spinner';
 import MediaUploadsChart from '../components/MediaUploadsChart';
 import KpiData from '../components/KpiData';
 
-const CHART_CONTAINER_HEIGHT = window.innerHeight - 580;
-const CHART_CONTAINER_WIDTH = window.innerWidth - 280;
-
 class MediaData extends Component {
   constructor(props) {
     super(props);
