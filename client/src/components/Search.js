@@ -5,7 +5,12 @@ import { Button } from 'react-bootstrap';
 import DeviceSearch from './DeviceSearch';
 import WatcherSearch from './WatcherSearch';
 import AccountIdSearch from './AccountIdSearch';
-import { setSearchValue } from '../redux/actions';
+import {
+  setSearchValue,
+  setCurrentFamilyCode,
+  setCurrentWatcherId,
+  setCurrentDeviceId,
+} from '../redux/actions';
 
 class Search extends Component {
   constructor(props) {
@@ -16,7 +21,9 @@ class Search extends Component {
 
   handleClearFilterButtonClick = (e) => {
     e.preventDefault();
-    this.props.clearFilterButtonOnClick();
+    this.props.setCurrentFamilyCode('');
+    this.props.setCurrentWatcherId(0);
+    this.props.setCurrentDeviceId(0);
     this.props.setSearchValue('');
   }
 
@@ -60,7 +67,11 @@ class Search extends Component {
         <Button
           id="clear-filter-btn"
           bsStyle="default"
-          disabled={this.props.clearFilterButtonDisabled}
+          disabled={
+            this.props.currentFamilyCode === ''
+            && this.props.currentDeviceId === 0
+            && this.props.currentWatcherId === 0
+          }
           onClick={this.handleClearFilterButtonClick}
         >
           Clear Filter
@@ -73,15 +84,19 @@ class Search extends Component {
 Search.propTypes = {
   data: PropTypes.array.isRequired,
   onSearchTargetSelected: PropTypes.func.isRequired,
-  clearFilterButtonDisabled: PropTypes.bool.isRequired,
-  clearFilterButtonOnClick: PropTypes.func.isRequired,
   setSearchValue: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = () => ({
+const mapStateToProps = (state) => ({
+  currentFamilyCode: state.currentFamilyCode,
+  currentWatcherId: state.currentWatcherId,
+  currentDeviceId: state.currentDeviceId,
 });
 
 const mapDispatchToProps = {
   setSearchValue,
+  setCurrentFamilyCode,
+  setCurrentWatcherId,
+  setCurrentDeviceId,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Search);
