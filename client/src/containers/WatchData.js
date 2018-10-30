@@ -9,7 +9,7 @@ import Spinner from '../components/Spinner';
 import DataDashboard from '../components/DataDashboard';
 import KpiData from '../components/KpiData';
 import DisplayModeSelection from '../components/DisplayModeSelection';
-import { setSearchValue, setCurrentFamilyCode, setCurrentWatcherId } from '../redux/actions';
+import { clearSearch } from '../redux/actions';
 
 const env = muze();
 const CHART_CONTAINER_HEIGHT = window.innerHeight - 760;
@@ -31,7 +31,7 @@ class WatchData extends Component {
       loadingData: false,
       checked: true,
     };
-    props.setSearchValue('');
+    props.clearSearch();
   }
 
   componentDidMount() {
@@ -170,6 +170,12 @@ class WatchData extends Component {
     this.setState({ selectedOption: name });
   }
 
+  onDisplayModeChange = () => {
+    document.getElementById('chart-container').innerHTML = '';
+    this.setState({ displayMode: this.state.displayMode === 'watcherId' ? 'familyCode' : 'watcherId' });
+    this.props.clearSearch('');
+  }
+
   renderDashboard = () => {
     const { watchData, checked } = this.state;
     if (watchData.length < 1) return null;
@@ -191,9 +197,7 @@ class WatchData extends Component {
               currentFamilyCode: '',
               currentWatcherId: 0,
              });
-             this.props.setSearchValue('');
-             this.props.setCurrentFamilyCode('');
-             this.props.setCurrentWatcherId(0);
+             this.props.clearSearch();
           },
         }]}
         searchType="watcher"
@@ -224,12 +228,6 @@ class WatchData extends Component {
     );
   }
 
-  handleRadioButtonChange = () => {
-    document.getElementById('chart-container').innerHTML = '';
-    this.setState({ displayMode: this.state.displayMode === 'watcherId' ? 'familyCode' : 'watcherId' });
-    this.props.setSearchValue('');
-  }
-
   render() {
     return (
       <div className="data-container">
@@ -238,7 +236,7 @@ class WatchData extends Component {
         />
         <DisplayModeSelection
           displayMode={this.state.displayMode}
-          handleRadioButtonChange={this.handleRadioButtonChange}
+          onDisplayModeChange={this.onDisplayModeChange}
         />
         {/* {this.renderDisplayModeSelection()} */}
         <div id="chart-container">
@@ -254,7 +252,7 @@ class WatchData extends Component {
 
 WatchData.propTypes = {
   setDisplayString: PropTypes.func.isRequired,
-  setSearchValue: PropTypes.func.isRequired,
+  clearSearch: PropTypes.func.isRequired,
   currentFamilyCode: PropTypes.string.isRequired,
   currentWatcherId: PropTypes.number.isRequired,
 };
@@ -267,9 +265,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = {
-  setSearchValue,
-  setCurrentWatcherId,
-  setCurrentFamilyCode,
+  clearSearch,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WatchData);
