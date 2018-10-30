@@ -78,6 +78,8 @@ class Chart extends React.Component {
       .columns([this.props.columns])
       .color(this.props.color)
       .mount(this.props.container ? this.props.container : '#chart-container')
+      .title(this.props.title)
+      .subtitle(this.props.subtitle)
     ;
     return null;
   }
@@ -106,6 +108,8 @@ Chart.propTypes = {
   active: PropTypes.bool,
   dateRange: PropTypes.object,
   container: PropTypes.string,
+  title: PropTypes.string,
+  subtitle: PropTypes.string,
 };
 
 const mapStateToProps = (state) => ({
