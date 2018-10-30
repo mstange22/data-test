@@ -14,7 +14,7 @@ class DisplayModeSelection extends Component {
             name="radio-watcher"
             type="radio"
             checked={this.props.displayMode === 'watcherId'}
-            onChange={this.props.handleRadioButtonChange}
+            onChange={this.props.onDisplayModeChange}
           />
           {'Watcher Id'}
         </label>
@@ -23,7 +23,7 @@ class DisplayModeSelection extends Component {
             name="radio-watcher"
             type="radio"
             checked={this.props.displayMode === 'familyCode'}
-            onChange={this.props.handleRadioButtonChange}
+            onChange={this.props.onDisplayModeChange}
           />
           {'Family Code'}
         </label>
@@ -34,7 +34,7 @@ class DisplayModeSelection extends Component {
 
 DisplayModeSelection.propTypes = {
   displayMode: PropTypes.string.isRequired,
-  handleRadioButtonChange: PropTypes.func.isRequired,
+  onDisplayModeChange: PropTypes.func.isRequired,
 };
 
 export default DisplayModeSelection;
