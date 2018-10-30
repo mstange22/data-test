@@ -21,7 +21,6 @@ class KpiData extends Component {
 
   render() {
     const { kpiData } = this.props;
-    console.log('kpiData:', kpiData);
     if (kpiData.length < 1) return null;
 
     const daily = kpiData.filter(m => m.create_date && (moment().hours(0).diff(moment.utc(m.create_date).local().hours(0), 'days') < 1));
