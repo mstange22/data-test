@@ -19,22 +19,29 @@ class KpiData extends Component {
     return ' warning';
   }
 
-  render() {
-    const { kpiData } = this.props;
+  getDiff = (now, date) => {
+    const createDate = moment(date).format('MM-DD-YYYY');
+    const diff = moment(now, 'MM-DD-YYYY').diff(moment(createDate, 'MM-DD-YYYY'), 'days');
+    return diff;
+  }
+
+  renderKpiData = () => {
+    const kpiData = this.props.kpiData.filter(d => d.create_date);
     if (kpiData.length < 1) return null;
 
-    const daily = kpiData.filter(m => m.create_date && (moment().hours(0).diff(moment.utc(m.create_date).local().hours(0), 'days') < 1));
-    const previousDay = kpiData.filter(m => m.create_date && (moment().hours(0).diff(moment.utc(m.create_date).local().hours(0), 'days') >= 1)
-      && (moment().diff(moment.utc(m.create_date).hours(0), 'days') < 2));
-    const weekly = kpiData.filter(m => m.create_date && (moment().hours(0).diff(moment.utc(m.create_date).local().hours(0), 'days') < 7));
-    const previousWeek = kpiData.filter(m => m.create_date && (moment().hours(0).diff(moment.utc(m.create_date).local().hours(0), 'days') >= 7)
-      && (moment().diff(moment.utc(m.create_date).local().hours(0), 'days') < 14));
-    const monthly = kpiData.filter(m => m.create_date && (moment().hours(0).diff(moment.utc(m.create_date).local().hours(0), 'days') <= 30));
-    const previousMonth = kpiData.filter(m => m.create_date && (moment().hours(0).diff(moment.utc(m.create_date).local().hours(0), 'days') > 30)
-      && (moment().diff(moment.utc(m.create_date).local().hours(0), 'days') < 60));
+    const now = moment().format('MM-DD-YYYY');
 
-    return(
-      <div className="kpi-container">
+    const daily = kpiData.filter(m => this.getDiff(now, m.create_date) < 1);
+    const previousDay = kpiData.filter(m => this.getDiff(now, m.create_date) === 1);
+
+    const weekly = kpiData.filter(m => this.getDiff(now, m.create_date) < 7);
+    const previousWeek = kpiData.filter(m => this.getDiff(now, m.create_date) >= 7 && this.getDiff(now, m.create_date) < 14);
+
+    const monthly = kpiData.filter(m => this.getDiff(now, m.create_date) < 30);
+    const previousMonth = kpiData.filter(m => this.getDiff(now, m.create_date) >= 30 && this.getDiff(now, m.create_date) < 60);
+
+    return (
+      <div className="kpi-row">
         <div className="kpi-display-box info">
           <div className="kpi-header">Total</div>
           <div className="kpi-total">
@@ -77,6 +84,14 @@ class KpiData extends Component {
             </span>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  render() {
+    return(
+      <div className="kpi-container">
+        {this.renderKpiData()}
       </div>
     );
   }
