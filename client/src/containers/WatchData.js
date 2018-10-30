@@ -8,6 +8,7 @@ import Notification from '../components/Notification';
 import Spinner from '../components/Spinner';
 import DataDashboard from '../components/DataDashboard';
 import KpiData from '../components/KpiData';
+import DisplayModeSelection from '../components/DisplayModeSelection';
 import { setSearchValue, setCurrentFamilyCode, setCurrentWatcherId } from '../redux/actions';
 
 const env = muze();
@@ -170,15 +171,15 @@ class WatchData extends Component {
   }
 
   renderDashboard = () => {
-    const { watchData } = this.state;
-    if (this.state.watchData.length < 1) return null;
+    const { watchData, checked } = this.state;
+    if (watchData.length < 1) return null;
     const activeUserWatchData = watchData
       .slice()
       .filter(d => this.state.activeWatcherIds.includes(d.watcher_id));
     if (activeUserWatchData.length < 1 || !this.state.hasInitializedData) return null;
     return (
       <DataDashboard
-        data={watchData}
+        data={checked ? activeUserWatchData : watchData}
         checkboxes={[{
           label: 'Only Display Active Accounts',
           name: 'activeOnly',
@@ -229,38 +230,17 @@ class WatchData extends Component {
     this.props.setSearchValue('');
   }
 
-  renderDisplayModeSelection = () => {
-    return (
-      <div className="display-mode-selector-container">
-        <label className="radio-label">
-          <input
-            name="radio-watcher"
-            type="radio"
-            checked={this.state.displayMode === 'watcherId'}
-            onChange={this.handleRadioButtonChange}
-          />
-          {'Watcher Id'}
-        </label>
-        <label className="radio-label">
-          <input
-            name="radio-watcher"
-            type="radio"
-            checked={this.state.displayMode === 'familyCode'}
-            onChange={this.handleRadioButtonChange}
-          />
-          {'Family Code'}
-        </label>
-      </div>
-    );
-  }
-
   render() {
     return (
       <div className="data-container">
         <KpiData
           kpiData={this.state.watchData}
         />
-        {this.renderDisplayModeSelection()}
+        <DisplayModeSelection
+          displayMode={this.state.displayMode}
+          handleRadioButtonChange={this.handleRadioButtonChange}
+        />
+        {/* {this.renderDisplayModeSelection()} */}
         <div id="chart-container">
           {this.renderSpinner()}
           {this.renderWatchData()}
