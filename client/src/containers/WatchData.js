@@ -178,7 +178,7 @@ class WatchData extends Component {
     if (activeUserWatchData.length < 1 || !this.state.hasInitializedData) return null;
     return (
       <DataDashboard
-        data={activeUserWatchData}
+        data={watchData}
         checkboxes={[{
           label: 'Only Display Active Accounts',
           name: 'activeOnly',

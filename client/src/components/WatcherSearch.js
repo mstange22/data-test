@@ -20,15 +20,18 @@ class WatcherSearch extends Component {
     this.getWatcherInfo();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     if (this.submitted) {
       this.handleWatcherChange();
+    }
+    if (this.props.data.length > prevProps.data.length) {
+      this.getWatcherInfo();
     }
   }
 
   getWatcherInfo = () => {
-    const watcherIds = this.props.activeUserData.reduce((accum, d) => !accum.includes(d['Watcher ID']) ? [...accum, d['Watcher ID']] : accum, []);
-    const familyCodes = this.props.activeUserData.reduce((accum, d) => !accum.includes(d['Family Code']) ? [...accum, d['Family Code']] : accum, []);
+    const watcherIds = this.props.data.reduce((accum, d) => !accum.includes(d['Watcher ID']) ? [...accum, d['Watcher ID']] : accum, []);
+    const familyCodes = this.props.data.reduce((accum, d) => !accum.includes(d['Family Code']) ? [...accum, d['Family Code']] : accum, []);
     const watcherInfo = [{
       title: 'Family Codes',
       info: familyCodes,
@@ -133,8 +136,8 @@ class WatcherSearch extends Component {
 }
 
 WatcherSearch.propTypes = {
+  data: PropTypes.array.isRequired,
   onWatcherSelected: PropTypes.func.isRequired,
-  activeUserData: PropTypes.array.isRequired,
   setSearchValue: PropTypes.func.isRequired,
 };
 

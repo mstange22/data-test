@@ -43,7 +43,7 @@ class Search extends Component {
       case 'watcher':
         search = (
           <WatcherSearch
-            activeUserData={data}
+            data={data}
             onWatcherSelected={onSearchTargetSelected}
             value={this.state.value}
           />
