@@ -9,6 +9,7 @@ import Spinner from '../components/Spinner';
 import KpiData from '../components/KpiData';
 import Chart from '../components/Chart';
 import {
+  clearSearch,
   setCurrentFamilyCode,
   setCurrentDeviceId,
 } from '../redux/actions';
@@ -26,8 +27,9 @@ class DeviceData extends Component {
       displayMode: 'familyCode',
       checked: false,
       loadingData: false,
-      range: null,
+      dateRange: null,
     };
+      props.clearSearch();
   }
 
   componentDidMount() {
@@ -36,7 +38,7 @@ class DeviceData extends Component {
 
   getDeviceData = () => {
     document.getElementById('chart-container').innerHTML = '';
-    this.props.setDisplayString('Device Data');
+    this.props.setDisplayString('Device Pings');
     this.setState({ deviceData: [], loadingData: true });
     API.getDeviceData()
       .then(res => {
@@ -84,23 +86,26 @@ class DeviceData extends Component {
   }
 
   onDeviceSelected = (device, displayMode) => {
+    this.setState({ displayMode, checked: false });
     if (displayMode === 'familyCode') {
-      this.setState({ displayMode, checked: false });
       this.props.setCurrentFamilyCode(device);
       this.props.setCurrentDeviceId(0);
     } else {
-      this.setState({ displayMode, checked: false });
       this.props.setCurrentFamilyCode('');
       this.props.setCurrentDeviceId(device);
     }
   }
 
   renderDashboard = () => {
-    const { deviceData } = this.state;
+    const { deviceData, checked } = this.state;
     if (deviceData.length < 1) return null;
+    const activeDeviceData = deviceData
+      .slice()
+      .filter(d => this.state.activeFamilyCodes.includes(d['Family Code']));
+    if (checked && activeDeviceData.length < 1) return null;
     return (
       <DataDashboard
-        data={deviceData}
+        data={checked ? activeDeviceData : deviceData}
         checkboxes={[{
           label: 'Only Display Active Accounts',
           name: 'activeOnly',
@@ -115,15 +120,8 @@ class DeviceData extends Component {
         }]}
         searchType="device"
         onSearchTargetSelected={this.onDeviceSelected}
-        onDateRangePicked={range => this.setState({ range })}
+        onDateRangePicked={dateRange => this.setState({ dateRange })}
       />
-    );
-  }
-
-  renderSpinner = () => {
-    if (!this.state.loadingData) return null;
-    return (
-      <Spinner />
     );
   }
 
@@ -140,13 +138,13 @@ class DeviceData extends Component {
   }
 
   renderChart = () => {
-    const { deviceData, displayMode, activeFamilyCodes, checked, range } = this.state;
+    const { deviceData, displayMode, activeFamilyCodes, checked, dateRange } = this.state;
     if (deviceData.length < 1 || activeFamilyCodes.length < 1) return null;
     return (
       <Chart
         data={deviceData}
         chartType="device"
-        range={range}
+        dateRange={dateRange}
         displayMode={displayMode}
         activeFamilyCodes={activeFamilyCodes}
         active={checked}
@@ -165,7 +163,7 @@ class DeviceData extends Component {
           kpiData={this.state.deviceData}
         />
         <div id="chart-container">
-          {this.renderSpinner()}
+          <Spinner loading={this.state.loadingData} />
           {this.renderChart()}
         </div>
         {this.renderDashboard()}
@@ -177,12 +175,16 @@ class DeviceData extends Component {
 
 DeviceData.propTypes = {
   setDisplayString: PropTypes.func.isRequired,
+  clearSearch: PropTypes.func.isRequired,
+  setCurrentFamilyCode: PropTypes.func.isRequired,
+  setCurrentDeviceId: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = () => ({
 });
 
 const mapDispatchToProps = {
+  clearSearch,
   setCurrentFamilyCode,
   setCurrentDeviceId,
 };
