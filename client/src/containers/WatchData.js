@@ -7,11 +7,12 @@ import muze, { DataModel } from 'muze';
 import Notification from '../components/Notification';
 import Spinner from '../components/Spinner';
 import DataDashboard from '../components/DataDashboard';
+import KpiData from '../components/KpiData';
 import { setSearchValue, setCurrentFamilyCode, setCurrentWatcherId } from '../redux/actions';
 
 const env = muze();
-const CHART_CONTAINER_HEIGHT = window.innerHeight - 620;
-const CHART_CONTAINER_WIDTH = window.innerWidth - 280;
+const CHART_CONTAINER_HEIGHT = window.innerHeight - 760;
+const CHART_CONTAINER_WIDTH = window.innerWidth - 310;
 
 class WatchData extends Component {
   constructor(props) {
@@ -62,7 +63,7 @@ class WatchData extends Component {
 
   getWatchData = () => {
     document.getElementById('chart-container').innerHTML = '';
-    this.props.setDisplayString('Minutes Watched by Day (Active Accounts)');
+    this.props.setDisplayString('Watchers (Active Accounts)');
     this.setState({ watchData: [], loadingData: true });
     API.getWatchData()
       .then(res => {
@@ -74,6 +75,7 @@ class WatchData extends Component {
               d['Date'] = moment.utc(d.date).format('M/DD/YY');
               d['Total Watch Minutes'] = (d.sum_watch / 1000 / 60).toFixed();
               d['Watcher ID'] = d.watcher_id;
+              d.create_date = d.date;
               return d;
             }),
             loadingData: false,
@@ -205,7 +207,7 @@ class WatchData extends Component {
   renderSpinner = () => {
     if (!this.state.loadingData) return null;
     return (
-      <Spinner height={CHART_CONTAINER_HEIGHT} width={CHART_CONTAINER_WIDTH} />
+      <Spinner />
     );
   }
 
@@ -255,6 +257,9 @@ class WatchData extends Component {
   render() {
     return (
       <div className="data-container">
+        <KpiData
+          kpiData={this.state.watchData}
+        />
         {this.renderDisplayModeSelection()}
         <div id="chart-container">
           {this.renderSpinner()}
