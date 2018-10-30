@@ -90,6 +90,7 @@ class SalesData extends Component {
         rows={'Total Sales'}
         columns={'Date'}
         triggerError={this.triggerError}
+        title="Total Sales Over Time"
       />
     );
   }
@@ -107,6 +108,7 @@ class SalesData extends Component {
         columns={'Date'}
         triggerError={this.triggerError}
         container="#chart-container-2"
+        title="Sales Per Day"
       />
     );
   }
