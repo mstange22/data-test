@@ -24,7 +24,7 @@ class WatcherSearch extends Component {
     if (this.submitted) {
       this.handleWatcherChange();
     }
-    if (this.props.data.length > prevProps.data.length) {
+    if (this.props.data.length !== prevProps.data.length) {
       this.getWatcherInfo();
     }
   }
@@ -137,6 +137,7 @@ class WatcherSearch extends Component {
 
 WatcherSearch.propTypes = {
   data: PropTypes.array.isRequired,
+  searchValue: PropTypes.string.isRequired,
   onWatcherSelected: PropTypes.func.isRequired,
   setSearchValue: PropTypes.func.isRequired,
 };
