@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { connect } from 'react-redux';
 // import { toggleSidebar } from '../../modules/Album/albumActions';
 
@@ -32,10 +33,14 @@ class Sidebar extends Component {
                 <span>Main Menu</span>
               </div> */}
               <div className="sidebar-img-container">
+                {/* <div className="sidebar-graph">
+                  <FontAwesomeIcon icon="chart-bar" />
+                </div> */}
                 <img
                   className="sidebar-avatar"
                   alt="Bar Graph"
-                  src={require('../assets/images/bar-graph.png')}
+                  src={require('../assets/images/rx.png')}
+                  // src={require('../assets/images/bar-graph.png')}
                 />
               </div>
               {/* <div
