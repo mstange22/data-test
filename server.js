@@ -10,7 +10,7 @@ const app = express();
 app.use(logger("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-// app.use(express.static("public")); 
+// app.use(express.static("public"));
 app.use(express.static("client/build"));
 
 const watchStatsConnection = mysql.createConnection({
@@ -18,6 +18,7 @@ const watchStatsConnection = mysql.createConnection({
   user: ENV.watchStatsUser,
   password: ENV.watchStatsPassword,
   database: ENV.watchStatsDatabase,
+  timezone: 'utc',
 });
 
 const dbConnection = mysql.createConnection({
@@ -25,6 +26,7 @@ const dbConnection = mysql.createConnection({
   user: ENV.dbUser,
   password: ENV.dbPassword,
   database: ENV.dbDatabase,
+  timezone: 'utc',
 });
 
 watchStatsConnection.connect((err) => {
