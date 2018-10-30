@@ -6,6 +6,7 @@ const initialState = {
   currentFamilyCode: '',
   currentWatcherId: 0,
   currentDeviceId: 0,
+  currentAccountId: 0,
 };
 
 export default initialState;

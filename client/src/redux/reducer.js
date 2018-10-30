@@ -18,6 +18,8 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, currentFamilyCode: action.payload.currentFamilyCode };
     case types.SET_CURRENT_DEVICE_ID:
       return { ...state, currentDeviceId: action.payload.currentDeviceId };
+    case types.SET_CURRENT_ACCOUNT_ID:
+      return { ...state, currentAccountId: action.payload.currentAccountId };
     case types.CLEAR_SEARCH:
       return {
         ...state,

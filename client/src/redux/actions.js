@@ -51,6 +51,13 @@ export const setCurrentDeviceId = currentDeviceId => ({
   },
 });
 
+export const setCurrentAccountId = currentAccountId => ({
+  type: types.SET_CURRENT_ACCOUNT_ID,
+  payload: {
+    currentAccountId,
+  },
+});
+
 export const clearSearch = () => ({
   type: types.CLEAR_SEARCH,
 });
