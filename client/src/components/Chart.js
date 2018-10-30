@@ -36,7 +36,6 @@ class Chart extends React.Component {
       filteredData = filteredData.filter(d => d['Watcher ID'] === this.props.currentWatcherId);
     }
 
-    // console.log('in renderChart:', filteredData);
     if (filteredData.length < 1) return null;
 
     // check for date range filter
@@ -63,15 +62,11 @@ class Chart extends React.Component {
       if (key === this.props.rows) {
         node.type = 'measure';
       }
-      if (chartType === 'sales' && key === 'Date') {
+      if (chartType === 'sales-line' && key === 'Date') {
         node.subtype = 'temporal';
       }
       schema.push(node);
     });
-
-    // console.log('schema:', schema);
-    // console.log('columns:', this.props.columns);
-    // console.log('rows:', this.props.rows);
 
     const dm = new DataModel(filteredData, schema);
     const canvas = env.canvas();
@@ -79,19 +74,10 @@ class Chart extends React.Component {
       .data(dm)
       .width(CHART_CONTAINER_WIDTH)
       .height(CHART_CONTAINER_HEIGHT)
-      // .layers([{
-      //   mark: 'arc',
-      //     encoding: {
-      //       angle: 'Device Pings',
-      //     },
-      // }])
-      // .rows([])
-      // .columns([])
       .rows([this.props.rows])
       .columns([this.props.columns])
       .color(this.props.color)
-      .mount('#chart-container')
-      // .size('batt')
+      .mount(this.props.container ? this.props.container : '#chart-container')
     ;
     return null;
   }
@@ -119,6 +105,7 @@ Chart.propTypes = {
   activeWatcherIds: PropTypes.array,
   active: PropTypes.bool,
   dateRange: PropTypes.object,
+  container: PropTypes.string,
 };
 
 const mapStateToProps = (state) => ({
