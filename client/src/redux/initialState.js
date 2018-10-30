@@ -7,6 +7,7 @@ const initialState = {
   currentWatcherId: 0,
   currentDeviceId: 0,
   currentAccountId: 0,
+  mediaUploads: [],
 };
 
 export default initialState;

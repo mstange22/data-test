@@ -61,3 +61,10 @@ export const setCurrentAccountId = currentAccountId => ({
 export const clearSearch = () => ({
   type: types.CLEAR_SEARCH,
 });
+
+export const setMediaUploads = mediaUploads => ({
+  type: types.SET_MEDIA_UPLOADS,
+  payload: {
+    mediaUploads,
+  },
+});
