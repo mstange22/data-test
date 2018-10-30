@@ -82,23 +82,15 @@ class MediaUploadsChart extends Component {
       .height(CHART_CONTAINER_HEIGHT)
       .rows(['Number of Users'])
       .columns(['Uploads'])
-      // .color('watcher_id')
       .mount('#chart-container')
     ;
-  }
-
-  renderSpinner = () => {
-    if (!this.state.loadingData) return null;
-    return (
-      <Spinner height={CHART_CONTAINER_HEIGHT} width={CHART_CONTAINER_WIDTH} />
-    );
   }
 
   render() {
     return (
       <div className="data-container">
         <div id="chart-container">
-          {this.renderSpinner()}
+          <Spinner loading={this.state.loadingData} />
           {this.renderMediaUploadsChart()}
         </div>
       </div>
