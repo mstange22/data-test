@@ -53,7 +53,7 @@ class SalesData extends Component {
       Object.keys(dailySales).forEach(key => {
         totalSalesData.push({
           Date: key,
-          Sales: dailySales[key] + cumulativeSales,
+          'Total Sales': dailySales[key] + cumulativeSales,
         });
         cumulativeSales += dailySales[key];
       });
@@ -88,14 +88,13 @@ class SalesData extends Component {
   }
 
   renderChart = () => {
-    const { totalSalesData } = this.state;
-    if (totalSalesData.length < 1) return null;
+    if (this.state.totalSalesData.length < 1) return null;
     return (
       <Chart
-        data={this.state.salesData}
+        data={this.state.totalSalesData}
         chartType="sales"
         displayMode={null}
-        rows={'Sales'}
+        rows={'Total Sales'}
         columns={'Date'}
         triggerError={this.triggerError}
       />
