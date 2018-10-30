@@ -5,12 +5,7 @@ import { Button } from 'react-bootstrap';
 import DeviceSearch from './DeviceSearch';
 import WatcherSearch from './WatcherSearch';
 import AccountIdSearch from './AccountIdSearch';
-import {
-  setSearchValue,
-  setCurrentFamilyCode,
-  setCurrentWatcherId,
-  setCurrentDeviceId,
-} from '../redux/actions';
+import { clearSearch } from '../redux/actions';
 
 class Search extends Component {
   constructor(props) {
@@ -21,10 +16,7 @@ class Search extends Component {
 
   handleClearFilterButtonClick = (e) => {
     e.preventDefault();
-    this.props.setCurrentFamilyCode('');
-    this.props.setCurrentWatcherId(0);
-    this.props.setCurrentDeviceId(0);
-    this.props.setSearchValue('');
+    this.props.clearSearch('');
   }
 
   render() {
@@ -84,7 +76,11 @@ class Search extends Component {
 Search.propTypes = {
   data: PropTypes.array.isRequired,
   onSearchTargetSelected: PropTypes.func.isRequired,
-  setSearchValue: PropTypes.func.isRequired,
+  clearSearch: PropTypes.func.isRequired,
+  searchType: PropTypes.string.isRequired,
+  currentFamilyCode: PropTypes.string.isRequired,
+  currentWatcherId: PropTypes.number.isRequired,
+  currentDeviceId: PropTypes.number.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -94,9 +90,6 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = {
-  setSearchValue,
-  setCurrentFamilyCode,
-  setCurrentWatcherId,
-  setCurrentDeviceId,
+  clearSearch,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Search);
