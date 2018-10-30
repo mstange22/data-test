@@ -61,8 +61,9 @@ class Search extends Component {
           bsStyle="default"
           disabled={
             this.props.currentFamilyCode === ''
-            && this.props.currentDeviceId === 0
             && this.props.currentWatcherId === 0
+            && this.props.currentDeviceId === 0
+            && this.props.currentAccountId === 0
           }
           onClick={this.handleClearFilterButtonClick}
         >
@@ -81,12 +82,14 @@ Search.propTypes = {
   currentFamilyCode: PropTypes.string.isRequired,
   currentWatcherId: PropTypes.number.isRequired,
   currentDeviceId: PropTypes.number.isRequired,
+  currentAccountId: PropTypes.number.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   currentFamilyCode: state.currentFamilyCode,
   currentWatcherId: state.currentWatcherId,
   currentDeviceId: state.currentDeviceId,
+  currentAccountId: state.currentAccountId,
 });
 
 const mapDispatchToProps = {
