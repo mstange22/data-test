@@ -24,34 +24,42 @@ class MediaUploadsChart extends Component {
       .then(res => {
           const mediaUploads = res.data.reduce((accum, d) => {
             if (d.media_count === 0) {
-              accum[0]['Number of Users'] += d['count(x.album_id)'];
+              accum[0]['Number of Albums'] += d['count(x.album_id)'];
             } else if (d.media_count <= 10) {
-              accum[1]['Number of Users'] += d['count(x.album_id)'];
+              accum[1]['Number of Albums'] += d['count(x.album_id)'];
             } else if (d.media_count <= 20) {
-              accum[2]['Number of Users'] += d['count(x.album_id)'];
+              accum[2]['Number of Albums'] += d['count(x.album_id)'];
             } else if (d.media_count <= 50) {
-              accum[3]['Number of Users'] += d['count(x.album_id)'];
+              accum[3]['Number of Albums'] += d['count(x.album_id)'];
             } else if (d.media_count <= 100) {
-              accum[4]['Number of Users'] += d['count(x.album_id)'];
+              accum[4]['Number of Albums'] += d['count(x.album_id)'];
+            } else if (d.media_count <= 200) {
+              accum[5]['Number of Albums'] += d['count(x.album_id)'];
+            } else if (d.media_count <= 500) {
+              accum[6]['Number of Albums'] += d['count(x.album_id)'];
             } else {
-              accum[5]['Number of Users'] += d['count(x.album_id)'];
+              accum[7]['Number of Albums'] += d['count(x.album_id)'];
             }
             return accum;
           }, [{
-              Uploads: '0', 'Number of Users': 0,
+              Uploads: '0', 'Number of Albums': 0,
             }, {
-              Uploads: '1 - 10', 'Number of Users': 0,
+              Uploads: '1 - 10', 'Number of Albums': 0,
             }, {
-              Uploads: '11 - 20', 'Number of Users': 0,
+              Uploads: '11 - 20', 'Number of Albums': 0,
             }, {
-              Uploads: '21 - 50', 'Number of Users': 0,
+              Uploads: '21 - 50', 'Number of Albums': 0,
             }, {
-              Uploads: '51 - 100', 'Number of Users': 0,
+              Uploads: '51 - 100', 'Number of Albums': 0,
             }, {
-              Uploads: '100+', 'Number of Users': 0,
+              Uploads: '101 - 200', 'Number of Albums': 0,
+            }, {
+              Uploads: '201 - 500', 'Number of Albums': 0,
+            }, {
+              Uploads: '501+', 'Number of Albums': 0,
             },
           ]);
-          console.log('mediaUploads:', mediaUploads);
+          // console.log('mediaUploads:', mediaUploads);
           this.setState({
             mediaUploads,
             loadingData: false,
@@ -69,7 +77,7 @@ class MediaUploadsChart extends Component {
         name: 'Uploads',
         type: 'dimension',
       }, {
-        name: 'Number of Users',
+        name: 'Number of Albums',
         type: 'measure',
       },
     ];
@@ -80,7 +88,7 @@ class MediaUploadsChart extends Component {
       .data(dm)
       .width(CHART_CONTAINER_WIDTH)
       .height(CHART_CONTAINER_HEIGHT)
-      .rows(['Number of Users'])
+      .rows(['Number of Albums'])
       .columns(['Uploads'])
       .mount('#chart-container')
     ;
