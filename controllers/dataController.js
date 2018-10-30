@@ -75,11 +75,11 @@ module.exports = (app, watchStatsConnection, dbConnection) => {
 
   app.get('/media/uploads', (req, res) => {
     const queryString = (
-      'SELECT * FROM media m \
+      'SELECT m.* FROM media m \
       JOIN customer_order co \
       ON m.album_id = co.album_id \
-        AND (co.status = \'active\' or co.status = \'trialing\') \
-        AND (m.type = \'video\' or m.type = \'image\')'
+      WHERE (co.status = \'active\' or co.status = \'trialing\') \
+      AND (m.type = \'video\' or m.type = \'image\')'
     );
 
     dbConnection.query(queryString, (err, data) => {
