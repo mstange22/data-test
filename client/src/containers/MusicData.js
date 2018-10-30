@@ -7,11 +7,12 @@ import moment from 'moment';
 import DataDashboard from '../components/DataDashboard';
 import Notification from '../components/Notification';
 import Spinner from '../components/Spinner';
+import KpiData from '../components/KpiData';
 import { setSearchValue } from '../redux/actions';
 
 const env = muze();
-const CHART_CONTAINER_HEIGHT = window.innerHeight - 580;
-const CHART_CONTAINER_WIDTH = window.innerWidth - 280;
+const CHART_CONTAINER_HEIGHT = window.innerHeight - 760;
+const CHART_CONTAINER_WIDTH = window.innerWidth - 310;
 
 class MusicData extends Component {
   constructor(props) {
@@ -63,7 +64,7 @@ class MusicData extends Component {
 
   getMusicData = () => {
     document.getElementById('chart-container').innerHTML = '';
-    this.props.setDisplayString('Music Data');
+    this.props.setDisplayString('Songs Played');
     this.setState({ musicData: [], loadingData: true });
     API.getMusicData()
       .then(res => {
@@ -75,6 +76,7 @@ class MusicData extends Component {
               d['Date'] = moment.utc(d.date).format('M/DD/YY');
               d['Watcher ID'] = d.watcher_id;
               d['Songs Played'] = 1;
+              d.create_date = d.date;
               return d;
             }),
             loadingData: false,
@@ -216,7 +218,7 @@ class MusicData extends Component {
   renderSpinner = () => {
     if (!this.state.loadingData) return null;
     return (
-      <Spinner height={CHART_CONTAINER_HEIGHT} width={CHART_CONTAINER_WIDTH} />
+      <Spinner />
     );
   }
 
@@ -235,6 +237,9 @@ class MusicData extends Component {
   render() {
     return (
       <div className="data-container">
+        <KpiData
+          kpiData={this.state.musicData}
+        />
         <div id="chart-container">
           {this.renderSpinner()}
           {this.renderMusicData()}
