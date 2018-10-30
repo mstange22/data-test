@@ -37,13 +37,6 @@ class MediaData extends Component {
       .catch(err => console.log(err.message));
   }
 
-  renderSpinner = () => {
-    if (!this.state.loadingData) return null;
-    return (
-      <Spinner height={CHART_CONTAINER_HEIGHT} width={CHART_CONTAINER_WIDTH} />
-    );
-  }
-
   renderMediaUploadsChart = () => {
     if (this.state.mediaUploads.length < 1) return null;
     return (
@@ -54,11 +47,11 @@ class MediaData extends Component {
   render() {
     return (
       <div className="data-container">
-          {this.renderSpinner()}
-          <KpiData
-            kpiData={this.state.mediaUploads}
-          />
-          {this.renderMediaUploadsChart()}
+        <Spinner loading={this.state.loadingData} />
+        <KpiData
+          kpiData={this.state.mediaUploads}
+        />
+        {this.renderMediaUploadsChart()}
       </div>
     );
   }

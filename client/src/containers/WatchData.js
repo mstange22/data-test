@@ -3,17 +3,13 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import API from "../utils/API";
-import muze, { DataModel } from 'muze';
 import Notification from '../components/Notification';
 import Spinner from '../components/Spinner';
 import DataDashboard from '../components/DataDashboard';
 import KpiData from '../components/KpiData';
 import DisplayModeSelection from '../components/DisplayModeSelection';
-import { clearSearch } from '../redux/actions';
-
-const env = muze();
-const CHART_CONTAINER_HEIGHT = window.innerHeight - 760;
-const CHART_CONTAINER_WIDTH = window.innerWidth - 310;
+import Chart from '../components/Chart';
+import { clearSearch, setCurrentFamilyCode, setCurrentWatcherId } from '../redux/actions';
 
 class WatchData extends Component {
   constructor(props) {
@@ -30,6 +26,7 @@ class WatchData extends Component {
       hasInitializedData: false,
       loadingData: false,
       checked: true,
+      dateRange: null,
     };
     props.clearSearch();
   }
@@ -89,78 +86,19 @@ class WatchData extends Component {
     this.setState({ displayError: true, errorMessage });
   }
 
-  renderWatchData = (range = null) => {
-    const { watchData, displayMode } = this.state;
-    if (watchData.length < 1) return null;
-    let filteredWatchData = watchData.slice();
-
-    // filter data dependent on displayMode
-    if (this.state.checked) {
-      if (displayMode === 'watcherId') {
-        filteredWatchData = watchData.filter(d => this.state.activeWatcherIds.includes(d['Watcher ID']));
-      } else {
-        filteredWatchData = watchData.filter(d => this.state.activeFamilyCodes.includes(d['Family Code']));
-      }
-    }
-
-    // check for watcher ID filter
-    if (displayMode === 'watcherId' && this.props.currentWatcherId !== 0) {
-      filteredWatchData = filteredWatchData.filter(d => d['Watcher ID'] === this.props.currentWatcherId);
-    }
-    // check for family code filter
-    if (displayMode === 'familyCode' && this.props.currentFamilyCode !== '') {
-      filteredWatchData = filteredWatchData.filter(d => d['Family Code'] === this.props.currentFamilyCode);
-    }
-
-    if (filteredWatchData.length < 1) return null;
-
-    if (range) {
-      const startDate = range.startDate.format('M/DD/YY');
-      const endDate = range.endDate.format('M/DD/YY');
-      filteredWatchData = filteredWatchData.filter(d => {
-        if (moment(d.Date, 'M/DD/YY').diff(moment(startDate, 'M/DD/YY'), 'days') >= 0 && moment(endDate, 'M/DD/YY').diff(moment(d.Date, 'M/DD/YY'), 'days') >= 0) {
-          return true;
-        }
-        return false;
-      });
-    }
-    if (filteredWatchData.length < 1) {
-      this.triggerError('There are no data events over that date range');
-      return null;
-    }
-    const schema = [];
-    Object.keys(filteredWatchData[0]).forEach(key => {
-      const node = { name: key, type: 'dimension' };
-      if (key === 'Total Watch Minutes') {
-        node.type = 'measure';
-      }
-      schema.push(node);
-    });
-    const dm = new DataModel(filteredWatchData, schema);
-    const canvas = env.canvas();
-    canvas
-      .data(dm)
-      .width(CHART_CONTAINER_WIDTH)
-      .height(CHART_CONTAINER_HEIGHT)
-      .rows(['Total Watch Minutes'])
-      .columns(['Date'])
-      .color(displayMode === 'watcherId' ? 'Watcher ID' : 'Family Code')
-      .mount('#chart-container')
-    ;
-  }
-
   handleCloseNotification = (e) => {
     e.preventDefault();
     this.setState({ displayError: false });
   }
 
   onWatcherSelected = (watcher, displayMode) => {
+    this.setState({ displayMode });
     if (displayMode === 'watcherId') {
-      this.setState({ currentWatcherId: watcher, displayMode });
       this.props.setCurrentWatcherId(watcher);
+      this.props.setCurrentFamilyCode('');
     } else {
-      this.setState({ currentFamilyCode: watcher, displayMode });
       this.props.setCurrentFamilyCode(watcher);
+      this.props.setCurrentWatcherId(0);
     }
   }
 
@@ -178,11 +116,11 @@ class WatchData extends Component {
 
   renderDashboard = () => {
     const { watchData, checked } = this.state;
-    if (watchData.length < 1) return null;
+    if (watchData.length < 1 || !this.state.hasInitializedData) return null;
     const activeUserWatchData = watchData
       .slice()
       .filter(d => this.state.activeWatcherIds.includes(d.watcher_id));
-    if (activeUserWatchData.length < 1 || !this.state.hasInitializedData) return null;
+    if (activeUserWatchData.length < 1) return null;
     return (
       <DataDashboard
         data={checked ? activeUserWatchData : watchData}
@@ -192,17 +130,13 @@ class WatchData extends Component {
           checked: this.state.checked,
           onChange: (e) => {
             document.getElementById('chart-container').innerHTML = '';
-            this.setState({
-              checked: e.target.checked,
-              currentFamilyCode: '',
-              currentWatcherId: 0,
-             });
+            this.setState({ checked: e.target.checked });
              this.props.clearSearch();
           },
         }]}
         searchType="watcher"
         onSearchTargetSelected={this.onWatcherSelected}
-        onDateRangePicked={range => this.renderWatchData(range)}
+        onDateRangePicked={dateRange => this.setState({ dateRange })}
         clearFilterButtonDisabled={this.props.currentFamilyCode === '' && this.props.currentWatcherId === 0}
         clearFilterButtonOnClick={() => this.setState({ currentFamilyCode: '', currentWatcherId: 0})}
       />
@@ -210,9 +144,9 @@ class WatchData extends Component {
   }
 
   renderSpinner = () => {
-    if (!this.state.loadingData) return null;
+    // if (!this.state.loadingData) return null;
     return (
-      <Spinner />
+      <Spinner loading={this.state.loadingData} />
     );
   }
 
@@ -229,19 +163,32 @@ class WatchData extends Component {
   }
 
   render() {
+    const { watchData, displayMode, dateRange, activeFamilyCodes, activeWatcherIds, checked } = this.state;
     return (
       <div className="data-container">
         <KpiData
-          kpiData={this.state.watchData}
+          kpiData={watchData}
         />
         <DisplayModeSelection
-          displayMode={this.state.displayMode}
+          displayMode={displayMode}
           onDisplayModeChange={this.onDisplayModeChange}
         />
-        {/* {this.renderDisplayModeSelection()} */}
         <div id="chart-container">
           {this.renderSpinner()}
-          {this.renderWatchData()}
+          {/* <Spinner loading={this.state.loadingData} /> */}
+          <Chart
+            data={watchData}
+            chartType="watch"
+            dateRange={dateRange}
+            displayMode={displayMode}
+            activeFamilyCodes={activeFamilyCodes}
+            activeWatcherIds={activeWatcherIds}
+            active={checked}
+            triggerError={this.triggerError}
+            rows={'Total Watch Minutes'}
+            columns={'Date'}
+            color={this.state.displayMode === 'familyCode' ? 'Family Code' : 'Watcher ID'}
+          />
         </div>
         {this.renderDashboard()}
         {this.renderNotification()}
@@ -251,10 +198,14 @@ class WatchData extends Component {
 }
 
 WatchData.propTypes = {
+  activeAccounts: PropTypes.array.isRequired,
+  allAccounts: PropTypes.array.isRequired,
   setDisplayString: PropTypes.func.isRequired,
   clearSearch: PropTypes.func.isRequired,
   currentFamilyCode: PropTypes.string.isRequired,
   currentWatcherId: PropTypes.number.isRequired,
+  setCurrentFamilyCode: PropTypes.func.isRequired,
+  setCurrentWatcherId: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -266,6 +217,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
   clearSearch,
+  setCurrentFamilyCode,
+  setCurrentWatcherId,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WatchData);

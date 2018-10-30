@@ -80,23 +80,33 @@ class SalesData extends Component {
     );
   }
 
-  renderSpinner = () => {
-    if (!this.state.loadingData) return null;
-    return (
-      <Spinner />
-    );
-  }
-
-  renderChart = () => {
+  renderSalesLineChart = () => {
     if (this.state.totalSalesData.length < 1) return null;
     return (
       <Chart
         data={this.state.totalSalesData}
-        chartType="sales"
+        chartType="sales-line"
         displayMode={null}
         rows={'Total Sales'}
         columns={'Date'}
         triggerError={this.triggerError}
+      />
+    );
+  }
+
+  renderSalesBarChart = () => {
+    const { salesData } = this.state;
+    if (this.state.salesData.length < 1) return null;
+    console.log('in salesBarChart', salesData);
+    return (
+      <Chart
+        data={salesData}
+        chartType="sales"
+        displayMode={null}
+        rows={'Sales'}
+        columns={'Date'}
+        triggerError={this.triggerError}
+        container="#chart-container-2"
       />
     );
   }
@@ -108,8 +118,12 @@ class SalesData extends Component {
             kpiData={this.state.salesData}
           />
           <div id="chart-container">
-            {this.renderSpinner()}
-            {this.renderChart()}
+            <Spinner loading={this.state.loadingData} />
+            {this.renderSalesLineChart()}
+          </div>
+          <div id="chart-container-2">
+            <Spinner loading={this.state.loadingData} />
+            {this.renderSalesBarChart()}
           </div>
           {this.renderNotification()}
       </div>

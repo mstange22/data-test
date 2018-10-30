@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import moment from 'moment';
 import API from "../utils/API";
-import muze, { DataModel } from 'muze';
 import DataDashboard from '../components/DataDashboard';
 import Notification from '../components/Notification';
 import Spinner from '../components/Spinner';
-
-const env = muze();
-const CHART_CONTAINER_HEIGHT = window.innerHeight - 580;
-const CHART_CONTAINER_WIDTH = window.innerWidth - 280;
+import KpiData from '../components/KpiData';
+import Chart from '../components/Chart';
+import DisplayModeSelection from '../components/DisplayModeSelection';
+import {
+  clearSearch,
+  setCurrentFamilyCode,
+  setCurrentWatcherId,
+} from '../redux/actions';
 
 class EmotionData extends Component {
   constructor(props) {
@@ -23,10 +27,12 @@ class EmotionData extends Component {
       selectedOption: 'smileCount',
       currentWatcherId: 0,
       currentFamilyCode: '',
-      renderMode: 'familyCode',
-      hasAddedFamilyCodes: false,
+      displayMode: 'familyCode',
+      hasInitializedData: false,
       loadingData: false,
+      checked: true,
     };
+    props.clearSearch();
   }
 
   componentDidMount() {
@@ -34,22 +40,27 @@ class EmotionData extends Component {
   }
 
   componentDidUpdate() {
-    if (this.state.activeWatcherAccounts.length && this.state.emotionData.length && !this.state.hasAddedFamilyCodes) {
-      this.addFamilyCodesToEmotionData();
+    if (this.props.allAccounts.length && this.props.activeAccounts.length && this.state.emotionData.length && !this.state.hasInitializedData) {
+      this.initializeData();
     }
   }
 
-  addFamilyCodesToEmotionData = () => {
-    const { activeWatcherAccounts } = this.state;
+  initializeData = () => {
+    const { allAccounts, activeAccounts } = this.props;
     const emotionData = this.state.emotionData.slice();
     emotionData.forEach(d => {
-      const idx = activeWatcherAccounts.findIndex(account => account.patient_account_id === d.watcher_id);
+      const idx = allAccounts.findIndex(account => account.patient_account_id === d.watcher_id);
       if (idx !== -1) {
-        d['Family Code'] = activeWatcherAccounts[idx].read_write_share_code;
+        d['Family Code'] = allAccounts[idx].read_write_share_code;
       }
     });
-    console.log('emotion data after adding family codes:', emotionData);
-    this.setState({ emotionData, hasAddedFamilyCodes: true });
+    console.log('watch data after adding family codes:', emotionData);
+    this.setState({
+      emotionData,
+      activeWatcherIds: activeAccounts.reduce((acc, d) => [...acc, d.patient_account_id], []),
+      activeFamilyCodes: activeAccounts.reduce((acc, d) => [...acc, d.read_write_share_code], []),
+      hasInitializedData: true,
+    });
   }
 
   getEmotionData = (range = null) => {
@@ -57,7 +68,7 @@ class EmotionData extends Component {
     this.setState({ emotionData: [], loadingData: true });
     API.getEmotionData()
       .then(res => {
-        this.props.setDisplayString('Number of Smiles by Day (Active Accounts)');
+        this.props.setDisplayString('Number of Smilers');
         this.setState({
           emotionData: res.data
             .slice()
@@ -66,22 +77,13 @@ class EmotionData extends Component {
               d['Date'] = moment.utc(d.date).format('M/DD/YY');
               d['Total Smiles'] = d.count;
               d['Watcher ID'] = d.watcher_id;
+              d.create_date = d.date;
               return d;
             }),
             loadingData: false,
         });
       })
       .catch(err => console.log(err.message));
-    API.getActiveWatcherAccounts()
-    .then(res => {
-      console.log('active customer accounts res:', res.data);
-      this.setState({
-        activeWatcherAccounts: res.data,
-        activeWatcherIds: res.data.reduce((acc, d) => [...acc, d.patient_account_id], []),
-        activeFamilyCodes: res.data.reduce((acc, d) => [...acc, d.read_write_share_code], []),
-      });
-    })
-    .catch(err => console.log(err.message));
   }
 
   triggerError = (errorMessage) => {
@@ -90,99 +92,47 @@ class EmotionData extends Component {
     }
   }
 
-  renderEmotionData = (range = null) => {
-    const { emotionData, renderMode } = this.state;
-    if (emotionData.length < 1) return null;
-    let filteredEmotionData = [];
-
-    // filter data dependent on renderMode
-    if (renderMode === 'watcherId') {
-      filteredEmotionData = emotionData.filter(d => this.state.activeWatcherIds.includes(d['Watcher ID']));
-    } else {
-      filteredEmotionData = emotionData.filter(d => this.state.activeFamilyCodes.includes(d['Family Code']));
-    }
-    // console.log('filtered emotion data:', filteredEmotionData);
-    if (filteredEmotionData.length < 1) return null;
-    // check for watcher ID filter
-    if (renderMode === 'watcherId' && this.state.currentWatcherId !== 0) {
-      filteredEmotionData = filteredEmotionData.filter(d => d['Watcher ID'] === this.state.currentWatcherId);
-    }
-    // check for family code filter
-    if (renderMode === 'familyCode' && this.state.currentFamilyCode !== '') {
-      filteredEmotionData = filteredEmotionData.filter(d => d['Family Code'] === this.state.currentFamilyCode);
-    }
-    // check for date range filter
-    if (range) {
-      const startDate = range.startDate.format('M/DD/YY');
-      const endDate = range.endDate.format('M/DD/YY');
-      filteredEmotionData = filteredEmotionData.filter(d => {
-        if (moment(d.Date, 'M/DD/YY').diff(moment(startDate, 'M/DD/YY'), 'days') >= 0 && moment(endDate, 'M/DD/YY').diff(moment(d.Date, 'M/DD/YY'), 'days') >= 0) {
-          return true;
-        }
-        return false;
-      });
-    }
-
-    // throw error if no records remain after filter
-    if (filteredEmotionData.length < 1) {
-      this.triggerError('There are no data events over the selected date range');
-      return null;
-    }
-
-    const schema = [];
-    Object.keys(filteredEmotionData[0]).forEach(key => {
-      const node = { name: key, type: 'dimension' };
-      if (key === 'Total Smiles' || key === 'Average Smile Strength') {
-        node.type = 'measure';
-      }
-      schema.push(node);
-    });
-
-    const dm = new DataModel(filteredEmotionData, schema);
-    const canvas = env.canvas();
-    canvas
-      .data(dm)
-      .width(CHART_CONTAINER_WIDTH)
-      .height(CHART_CONTAINER_HEIGHT)
-      .rows(['Total Smiles'])
-      .columns(['Date'])
-      .color(renderMode === 'watcherId' ? 'Watcher ID' : 'Family Code')
-      .mount('#chart-container')
-    ;
-  }
-
   handleInputChange = (e) => {
     e.preventDefault();
     const { name } = e.target;
     this.setState({ selectedOption: name });
   }
 
-  onWatcherSelected = (watcher, renderMode) => {
-    if (renderMode === 'watcherId') {
-      this.setState({ currentWatcherId: watcher, currentFamilyCode: '', renderMode });
+  onWatcherSelected = (watcher, displayMode) => {
+    this.setState({ displayMode });
+    if (displayMode === 'watcherId') {
+      this.props.setCurrentWatcherId(watcher);
+      this.props.setCurrentFamilyCode('');
     } else {
-      this.setState({ currentFamilyCode: watcher, currentWatcherId: 0, renderMode });
+      this.props.setCurrentFamilyCode(watcher);
+      this.props.setCurrentWatcherId(0);
     }
   }
 
+  onDisplayModeChange = () => {
+    document.getElementById('chart-container').innerHTML = '';
+    this.setState({ displayMode: this.state.displayMode === 'watcherId' ? 'familyCode' : 'watcherId' });
+    this.props.clearSearch();
+  }
+
   renderDashboard = () => {
-    const { emotionData } = this.state;
-    if (this.state.emotionData.length < 1 || !this.state.hasAddedFamilyCodes) return null;
+    const { emotionData, checked } = this.state;
+    if (emotionData.length < 1 || !this.state.hasInitializedData) return null;
     const activeUserEmotionData = emotionData
       .slice()
       .filter(d => this.state.activeWatcherIds.includes(d.watcher_id));
     if (activeUserEmotionData.length < 1) return null;
     return (
       <DataDashboard
-        data={activeUserEmotionData}
+        data={checked ? activeUserEmotionData : emotionData}
         checkboxes={[{
-          label: 'Smile Count',
-          name: 'smileCount',
-          checked: this.state.selectedOption === 'smileCount',
+          label: 'Only Display Active Accounts',
+          name: 'activeOnly',
+          checked: this.state.checked,
           onChange: (e) => {
-            e.preventDefault();
-            const { name } = e.target;
-            this.setState({ selectedOption: name });
+            document.getElementById('chart-container').innerHTML = '';
+            this.setState({ checked: e.target.checked });
+            this.props.clearSearch();
           },
         }]}
         searchType="watcher"
@@ -191,13 +141,6 @@ class EmotionData extends Component {
         clearFilterButtonDisabled={this.state.currentFamilyCode === '' && this.state.currentWatcherId === 0}
         clearFilterButtonOnClick={() => this.setState({ currentFamilyCode: '', currentWatcherId: 0})}
       />
-    );
-  }
-
-  renderSpinner = () => {
-    if (!this.state.loadingData) return null;
-    return (
-      <Spinner height={CHART_CONTAINER_HEIGHT} width={CHART_CONTAINER_WIDTH} />
     );
   }
 
@@ -214,11 +157,31 @@ class EmotionData extends Component {
   }
 
   render() {
+    const { emotionData, displayMode, dateRange, activeFamilyCodes, activeWatcherIds, checked } = this.state;
     return (
       <div className="data-container">
+        <KpiData
+          kpiData={this.state.emotionData}
+        />
+        <DisplayModeSelection
+          displayMode={this.state.displayMode}
+          onDisplayModeChange={this.onDisplayModeChange}
+        />
         <div id="chart-container">
-          {this.renderSpinner()}
-          {this.renderEmotionData()}
+          <Spinner loading={this.state.loadingData} />
+          <Chart
+            data={emotionData}
+            chartType="watch"
+            dateRange={dateRange}
+            displayMode={displayMode}
+            activeFamilyCodes={activeFamilyCodes}
+            activeWatcherIds={activeWatcherIds}
+            active={checked}
+            triggerError={this.triggerError}
+            rows={'Total Smiles'}
+            columns={'Date'}
+            color={this.state.displayMode === 'familyCode' ? 'Family Code' : 'Watcher ID'}
+          />
         </div>
         {this.renderDashboard()}
         {this.renderNotification()}
@@ -228,7 +191,25 @@ class EmotionData extends Component {
 }
 
 EmotionData.propTypes = {
+  activeAccounts: PropTypes.array.isRequired,
+  allAccounts: PropTypes.array.isRequired,
   setDisplayString: PropTypes.func.isRequired,
+  clearSearch: PropTypes.func.isRequired,
+  setCurrentWatcherId: PropTypes.func.isRequired,
+  setCurrentFamilyCode: PropTypes.func.isRequired,
 };
 
-export default EmotionData;
+const mapStateToProps = (state) => ({
+  activeAccounts: state.activeAccounts,
+  allAccounts: state.allAccounts,
+  currentWatcherId: state.currentWatcherId,
+  currentFamilyCode: state.currentFamilyCode,
+});
+
+const mapDispatchToProps = {
+  clearSearch,
+  setCurrentWatcherId,
+  setCurrentFamilyCode,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(EmotionData);

@@ -8,7 +8,7 @@ import DataDashboard from '../components/DataDashboard';
 import Notification from '../components/Notification';
 import Spinner from '../components/Spinner';
 import KpiData from '../components/KpiData';
-import { setSearchValue } from '../redux/actions';
+import { setSearchValue, setCurrentAccountId } from '../redux/actions';
 
 const env = muze();
 const CHART_CONTAINER_HEIGHT = window.innerHeight - 760;
@@ -20,13 +20,10 @@ class SmsData extends Component {
     this.state = {
       smsData: [],
       renderMode: 'Account ID',
-      activeSmsAccounts: [],
-      activeSmsAccountIds: [],
       displayError: false,
       errorMessage: '',
-      currentAccountId: 0,
       selectedOption: 'smsCount',
-      loadingSmsData: false,
+      loadingData: false,
     };
     props.setSearchValue('');
   }
@@ -38,7 +35,7 @@ class SmsData extends Component {
   getSmsData = () => {
     document.getElementById('chart-container').innerHTML = '';
     this.props.setDisplayString('Number of Incoming SMS Messages');
-    this.setState({ smsData: [], loadingSmsData: true });
+    this.setState({ smsData: [], loadingData: true });
     API.getSmsData()
       .then(res => {
         console.log('smsData res:', res.data);
@@ -53,19 +50,10 @@ class SmsData extends Component {
               d['Messages Sent'] = d.incoming;
               return d;
             }),
-          loadingSmsData: false,
+          loadingData: false,
         });
       })
       .catch(err => console.log(err.message));
-    API.getActiveSmsAccounts()
-    .then(res => {
-      console.log('active sms accounts res:', res.data);
-      this.setState({
-        activeSmsAccounts: res.data,
-        activeSmsAccountIds: res.data.reduce((acc, d) => [...acc, d.account_id], []),
-      });
-    })
-    .catch(err => console.log(err.message));
   }
 
   triggerError = (errorMessage) => {
@@ -81,10 +69,9 @@ class SmsData extends Component {
     }
 
     // check for account ID filter
-    if (this.state.currentAccountId !== 0) {
+    if (this.props.currentAccountId !== 0) {
       filteredSmsData = filteredSmsData.filter(d => {
-        if (d['Account ID'] === this.state.currentAccountId) {
-          // console.log('**** match ****');
+        if (d['Account ID'] === this.props.currentAccountId) {
           return true;
         }
         return false;
@@ -140,36 +127,13 @@ class SmsData extends Component {
   renderDashboard = () => {
     const { smsData } = this.state;
     if (smsData.length < 1) return null;
-    const activeUserSmsData = smsData
-      .slice()
-      .filter(d => this.state.activeSmsAccountIds.includes(d['Account ID']));
-    if (activeUserSmsData.length < 1) return null;
     return (
       <DataDashboard
-        data={activeUserSmsData}
-        checkboxes={[{
-          label: 'SMS Count',
-          name: 'smsCount',
-          checked: this.state.selectedOption === 'smsCount',
-          onChange: (e) => {
-            e.preventDefault();
-            const { name } = e.target;
-            this.setState({ selectedOption: name });
-          },
-        }]}
+        data={smsData}
         searchType="account"
-        onSearchTargetSelected={(currentAccountId) => this.setState({ currentAccountId })}
+        onSearchTargetSelected={(currentAccountId) => this.props.setCurrentAccountId(currentAccountId)}
         onDateRangePicked={range => this.renderSmsData(range)}
-        clearFilterButtonDisabled={this.state.currentAccountId === 0}
-        clearFilterButtonOnClick={() => this.setState({ currentAccountId: 0})}
       />
-    );
-  }
-
-  renderSpinner = () => {
-    if (!this.state.loadingSmsData) return null;
-    return (
-      <Spinner />
     );
   }
 
@@ -192,7 +156,7 @@ class SmsData extends Component {
           kpiData={this.state.smsData}
         />
         <div id="chart-container">
-          {this.renderSpinner()}
+          <Spinner loading={this.state.loadingData} />
           {this.renderSmsData()}
         </div>
         {this.renderDashboard()}
@@ -205,13 +169,17 @@ class SmsData extends Component {
 SmsData.propTypes = {
   setDisplayString: PropTypes.func.isRequired,
   setSearchValue: PropTypes.func.isRequired,
+  currentAccountId: PropTypes.number.isRequired,
+  setCurrentAccountId: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = () => ({
+const mapStateToProps = (state) => ({
+  currentAccountId: state.currentAccountId,
 });
 
 const mapDispatchToProps = {
   setSearchValue,
+  setCurrentAccountId,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SmsData);
