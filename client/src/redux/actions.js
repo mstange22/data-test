@@ -50,3 +50,7 @@ export const setCurrentDeviceId = currentDeviceId => ({
     currentDeviceId,
   },
 });
+
+export const clearSearch = () => ({
+  type: types.CLEAR_SEARCH,
+});
