@@ -15,29 +15,34 @@ class Chart extends React.Component {
   }
 
   renderChart = () => {
-    const { chartType, data, displayMode, range, active } = this.props;
+    const { chartType, data, displayMode, dateRange, active } = this.props;
+    if (data.length < 1) return null;
     let filteredData = data.slice();
 
-    if (chartType === 'device') {
-      if (displayMode === 'familyCode' && active) {
+    if (active) {
+      if (displayMode === 'watcherId') {
+        filteredData = data.filter(d => this.props.activeWatcherIds.includes(d['Watcher ID']));
+      } else if (displayMode === 'familyCode') {
         filteredData = data.filter(d => this.props.activeFamilyCodes.includes(d['Family Code']));
-      }
-      // check for account ID filter
-      if (displayMode === 'deviceId' && this.props.currentDeviceId !== 0) {
-        filteredData = filteredData.filter(d => d['Device ID'] === this.props.currentDeviceId);
-      }
-      if (displayMode === 'familyCode' && this.props.currentFamilyCode !== '') {
-        filteredData = filteredData.filter(d => d['Family Code'] === this.props.currentFamilyCode);
       }
     }
 
-    console.log('in renderChart:', filteredData);
+    // check for account ID filter
+    if (displayMode === 'deviceId' && this.props.currentDeviceId !== 0) {
+      filteredData = filteredData.filter(d => d['Device ID'] === this.props.currentDeviceId);
+    } else if (displayMode === 'familyCode' && this.props.currentFamilyCode !== '') {
+      filteredData = filteredData.filter(d => d['Family Code'] === this.props.currentFamilyCode);
+    } else if (displayMode === 'watcherId' && this.props.currentWatcherId !== 0) {
+      filteredData = filteredData.filter(d => d['Watcher ID'] === this.props.currentWatcherId);
+    }
+
+    // console.log('in renderChart:', filteredData);
     if (filteredData.length < 1) return null;
 
     // check for date range filter
-    if (range) {
-      const startDate = range.startDate.format('M/DD/YY');
-      const endDate = range.endDate.format('M/DD/YY');
+    if (dateRange) {
+      const startDate = dateRange.startDate.format('M/DD/YY');
+      const endDate = dateRange.endDate.format('M/DD/YY');
       filteredData = filteredData.filter(d => {
         if (moment(d.Date, 'M/DD/YY').diff(moment(startDate, 'M/DD/YY'), 'days') >= 0 && moment(endDate, 'M/DD/YY').diff(moment(d.Date, 'M/DD/YY'), 'days') >= 0) {
           return true;
@@ -64,9 +69,9 @@ class Chart extends React.Component {
       schema.push(node);
     });
 
-    console.log('schema:', schema);
-    console.log('columns:', this.props.columns);
-    console.log('rows:', this.props.rows);
+    // console.log('schema:', schema);
+    // console.log('columns:', this.props.columns);
+    // console.log('rows:', this.props.rows);
 
     const dm = new DataModel(filteredData, schema);
     const canvas = env.canvas();
@@ -113,6 +118,7 @@ Chart.propTypes = {
   activeFamilyCodes: PropTypes.array,
   activeWatcherIds: PropTypes.array,
   active: PropTypes.bool,
+  dateRange: PropTypes.object,
 };
 
 const mapStateToProps = (state) => ({
