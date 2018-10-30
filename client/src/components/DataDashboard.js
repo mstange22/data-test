@@ -19,11 +19,11 @@ class DataDashboard extends Component {
   }
 
   render() {
-    const { data } = this.props;
+    const { data, checkboxes } = this.props;
     return (
       <div className="data-dashboard">
         <div className="form-input-container">
-          {this.props.checkboxes.map(checkbox => (
+          {checkboxes && checkboxes.map(checkbox => (
             <label key={checkbox.label} className="checkbox-label">
               <input
                 name={checkbox.name}
@@ -52,7 +52,7 @@ class DataDashboard extends Component {
 
 DataDashboard.propTypes = {
   data: PropTypes.array.isRequired,
-  checkboxes: PropTypes.array.isRequired,
+  checkboxes: PropTypes.array,
   searchType: PropTypes.string,
   onDateRangePicked: PropTypes.func.isRequired,
   onSearchTargetSelected: PropTypes.func.isRequired,
