@@ -8,6 +8,7 @@ import Notification from '../components/Notification';
 import Spinner from '../components/Spinner';
 import KpiData from '../components/KpiData';
 import Chart from '../components/Chart';
+import DisplayModeSelection from '../components/DisplayModeSelection';
 import { clearSearch, setCurrentFamilyCode, setCurrentWatcherId } from '../redux/actions';
 
 class MusicData extends Component {
@@ -19,11 +20,12 @@ class MusicData extends Component {
       activeFamilyCodes: [],
       displayError: false,
       errorMessage: '',
-      renderMode: 'familyCode',
+      displayMode: 'familyCode',
       selectedOption: 'musicData',
       hasInitializedData: false,
       loadingData: false,
       checked: true,
+      dateRange: null,
     };
     props.clearSearch();
   }
@@ -94,15 +96,21 @@ class MusicData extends Component {
     this.setState({ selectedOption: name });
   }
 
-  onWatcherSelected = (watcher, renderMode) => {
-    this.setState({ renderMode });
-    if (renderMode === 'watcherId') {
+  onWatcherSelected = (watcher, displayMode) => {
+    this.setState({ displayMode });
+    if (displayMode === 'watcherId') {
       this.props.setCurrentWatcherId(watcher);
       this.props.setCurrentFamilyCode('');
     } else {
       this.props.setCurrentWatcherId(0);
       this.props.setCurrentFamilyCode(watcher);
     }
+  }
+
+  onDisplayModeChange = () => {
+    document.getElementById('chart-container').innerHTML = '';
+    this.setState({ displayMode: this.state.displayMode === 'watcherId' ? 'familyCode' : 'watcherId' });
+    this.props.clearSearch('');
   }
 
   renderDashboard = () => {
@@ -127,7 +135,7 @@ class MusicData extends Component {
         }]}
         searchType="watcher"
         onSearchTargetSelected={this.onWatcherSelected}
-        onDateRangePicked={range => this.renderMusicData(range)}
+        onDateRangePicked={dateRange => this.setState({ dateRange })}
       />
     );
   }
@@ -150,6 +158,10 @@ class MusicData extends Component {
       <div className="data-container">
         <KpiData
           kpiData={this.state.musicData}
+        />
+        <DisplayModeSelection
+          displayMode={displayMode}
+          onDisplayModeChange={this.onDisplayModeChange}
         />
         <div id="chart-container">
           <Spinner loading={this.state.loadingData} />
