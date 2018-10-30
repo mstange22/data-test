@@ -26,7 +26,8 @@ export default function reducer(state = initialState, action = {}) {
         searchValue: '',
         currentFamilyCode: '',
         currentWatcherId: 0,
-        currentcurrentDeviceId: 0,
+        currentDeviceId: 0,
+        currentAccountId: 0,
       };
     default:
       return state;
