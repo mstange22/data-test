@@ -31,6 +31,7 @@ class EmotionData extends Component {
       hasInitializedData: false,
       loadingData: false,
       checked: true,
+      dateRange: null,
     };
     props.clearSearch();
   }
@@ -68,7 +69,7 @@ class EmotionData extends Component {
     this.setState({ emotionData: [], loadingData: true });
     API.getEmotionData()
       .then(res => {
-        this.props.setDisplayString('Number of Smilers');
+        this.props.setDisplayString('Emotion Data');
         this.setState({
           emotionData: res.data
             .slice()
@@ -137,7 +138,7 @@ class EmotionData extends Component {
         }]}
         searchType="watcher"
         onSearchTargetSelected={this.onWatcherSelected}
-        onDateRangePicked={range => this.renderEmotionData(range)}
+        onDateRangePicked={dateRange => this.setState({ dateRange })}
         clearFilterButtonDisabled={this.state.currentFamilyCode === '' && this.state.currentWatcherId === 0}
         clearFilterButtonOnClick={() => this.setState({ currentFamilyCode: '', currentWatcherId: 0})}
       />
@@ -181,6 +182,8 @@ class EmotionData extends Component {
             rows={'Total Smiles'}
             columns={'Date'}
             color={this.state.displayMode === 'familyCode' ? 'Family Code' : 'Watcher ID'}
+            title="Watchers Who Smiled By Day"
+            subtitle="(see bars for number of smiles)"
           />
         </div>
         {this.renderDashboard()}
