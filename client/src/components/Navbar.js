@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class Navbar extends Component {
   render() {
@@ -12,11 +13,14 @@ class Navbar extends Component {
         />
         <div className="navbar-container-right">
           <h3 className="rx-header-title">Data Pipeline Dashboard</h3>
-          <img
+          <div style={{ fontSize: 64, marginLeft: 10, marginRight: 20 }}>
+            <FontAwesomeIcon icon="chart-bar" />
+          </div>
+          {/* <img
             className="sidebar-avatar"
             alt="Bar Graph"
             src={require('../assets/images/bar-graph.png')}
-          />
+          /> */}
         </div>
       </div>
     );
