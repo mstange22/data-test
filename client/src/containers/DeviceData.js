@@ -47,7 +47,7 @@ class DeviceData extends Component {
             .slice()
             .sort((a, b) => a.date < b.date ? -1 : 1)
             .map(d => {
-              d['Date'] = moment.utc(d.date).format('M/DD/YY');
+              d['Date'] = moment.utc(d.date).local().format('M/DD/YY');
               d['Device ID'] = d.device_id;
               d['Family Code'] = d.code;
               d['Device Pings'] = 1;

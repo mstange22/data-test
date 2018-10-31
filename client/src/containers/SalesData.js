@@ -30,7 +30,7 @@ class SalesData extends Component {
               .slice()
               .sort((a, b) => a.create_date < b.create_date ? -1 : 1)
               .map(d => {
-                d['Date'] = moment.utc(d.create_date).format('M/DD/YY');
+                d['Date'] = moment.utc(d.create_date).local().format('M/DD/YY');
                 d['Sales'] = 1;
                 return d;
               }),

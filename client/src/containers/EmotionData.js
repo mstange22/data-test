@@ -75,7 +75,7 @@ class EmotionData extends Component {
             .slice()
             .sort((a, b) => a.date < b.date ? -1 : 1)
             .map(d => {
-              d['Date'] = moment.utc(d.date).format('M/DD/YY');
+              d['Date'] = moment.utc(d.date).local().format('M/DD/YY');
               d['Total Smiles'] = d.count;
               d['Watcher ID'] = d.watcher_id;
               d.create_date = d.date;
