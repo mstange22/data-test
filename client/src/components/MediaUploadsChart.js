@@ -91,6 +91,8 @@ class MediaUploadsChart extends Component {
       .rows(['Number of Albums'])
       .columns(['Uploads'])
       .mount('#chart-container')
+      .title('Album Breakdown By Number Of Uploads')
+      .subtitle(`Ex: There are ${mediaUploads[5]['Number of Albums']} albums with between 101 and 200 media uploads`)
     ;
   }
 
