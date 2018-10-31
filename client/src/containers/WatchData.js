@@ -188,6 +188,8 @@ class WatchData extends Component {
             rows={'Total Watch Minutes'}
             columns={'Date'}
             color={this.state.displayMode === 'familyCode' ? 'Family Code' : 'Watcher ID'}
+            title="Watch Minutes By Day"
+            subtitle="(see bars for minutes per watcher)"
           />
         </div>
         {this.renderDashboard()}
